@@ -1,7 +1,7 @@
 import bitarray, csv
 import numpy as np
 
-data_folder = 'data'
+data_folder = 'ml/data'
 
 def separate(wd):
   return wd.split("|")
@@ -39,4 +39,5 @@ class Ml:
 
 if __name__ == "__main__":
   m = Ml()
+  data_folder = "data"
   print(m.get_pool([]))
