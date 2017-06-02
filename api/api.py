@@ -1,9 +1,10 @@
-from flask import request
+from flask import request, Flask, abort
+from werkzeug.exceptions import BadRequest
 import json
 import uuid
 from random import randint
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 
 rooms = {}
 
@@ -23,13 +24,13 @@ def join_room():
     uid = uuid.uuid4()
     
     if request.json == None:
-        return 'Expected json data'
+        abort(400, "Expected json data")
     elif 'room' not in request.json:
-        return 'Expected room in json data'
+        abort(400, "Expected room in json data")
     
     room = request.json['room']
     if room not in rooms:
-        return 'Unknown room'
+        abort(400, "Unknown room")
     rooms[room]['users'].append(uid)
     return json.dumps({
         "uid": str(uid)
