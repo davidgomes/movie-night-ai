@@ -22,8 +22,7 @@ def create_room():
 @app.route("/api/room/join", methods=["POST"])
 def join_room():
     uid = uuid.uuid4()
-    print(request.json)
-
+    
     if request.json == None:
         return 'Expected json data'
     elif 'room' not in request.json:
