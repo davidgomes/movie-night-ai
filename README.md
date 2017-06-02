@@ -2,7 +2,8 @@
 Movie Night AI
 
 ## Running the frontend
-1. Run `npm start`
+1. Run `npm install`.
+2. Run `npm start`.
 
 ## Running the API
 
