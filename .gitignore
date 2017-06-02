@@ -25,3 +25,4 @@ yarn-error.log*
 /api/lib/
 /api/pip-selfcheck.json
 /api/pyvenv.cfg
+/api/lib64
