@@ -3,8 +3,10 @@ from werkzeug.exceptions import BadRequest
 import json
 import uuid
 from random import randint
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 
 rooms = {}
 
@@ -22,12 +24,12 @@ def create_room():
 @app.route("/api/room/join", methods=["POST"])
 def join_room():
     uid = uuid.uuid4()
-    
+
     if request.json == None:
         abort(400, "Expected json data")
     elif "room" not in request.json:
         abort(400, "Expected room in json data")
-    
+
     room = request.json["room"]
     if room not in rooms:
         abort(400, "Unknown room")
