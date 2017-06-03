@@ -183,10 +183,25 @@ class Ml:
     res = []
 
     if len(movie_pairs) == 0:
-      res = list(np.random.choice(self.n_movies, num_sample, replace=False))
-      res = [i for i in res if self.movie_list[i].year >= self.start_year]
+      chosen_list = list(np.random.choice(self.n_movies, min(num_sample * 700, 3000), replace=False))
+      chosen_list = [i for i in chosen_list if
+                     self.movie_list[i].year >= self.start_year and
+                     len(self.p_bitmask[i]) - len(self.n_bitmask[i]) >= self.max_popularity / 10]
+
+      # Greedy optimization for most distinct
+      best_score = 10000
+      best_set = []
+      for i in range(self.greedy_iterations * 10):
+        attempt_set = list(np.random.choice(chosen_list, num_sample, replace=False))
+        attempt_score = self.score(attempt_set)
+        
+        if attempt_score < best_score:
+          best_score = attempt_score
+          best_set = attempt_set
+      
+      res = best_set
     else:
-      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 700, 3000), replace=False)) if self.movie_list[i].year >= self.start_year]
+      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 500, 2000), replace=False)) if self.movie_list[i].year >= self.start_year]
 
       ratings = [i[1] for i in movie_pairs]
       movies  = [i[0] for i in movie_pairs]
@@ -196,7 +211,7 @@ class Ml:
           del sample_list[sample_list.index(movie)]
 
       rating_list = [(movie, self.rate(movie, movies, ratings)) for movie in sample_list]
-      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((1.5 + 6 * funnel) * num_sample)]
+      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((1.5 + 5 * funnel) * num_sample)]
 
       # Greedy optimization for most distinct
       best_score = 10000
@@ -238,5 +253,3 @@ if __name__ == "__main__":
   for i in m.get_pool([(test_id, 1)], 0.05):
     print(m.movie_list[i])
     print(i)
-
-  print(m.n_movies)
