@@ -15,7 +15,7 @@ ml = Ml()
 app = Flask(__name__)
 CORS(app)
 
-ROUNDS = 4
+ROUNDS = 3
 
 class User:
     def __init__(self, uid, cur_movie):
@@ -70,7 +70,8 @@ class Pool:
                 movie = ml.movie_list[self.movies[user.cur_movie]]
                 return (0, movie)
             elif check == 2:
-                votes = sorted([(j, i) for i,j in self.sum_votes(user)])[:3]
+                votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes(user)], key=lambda x: -x[0] )[:3]
+                votes = [i for _,i in votes]
                 return (2, votes)
             else:
                 return (1, None)
@@ -147,6 +148,7 @@ def movie():
         })
     elif res == 2:
         podium = []
+        print(movie)
         for m in movie:
             podium.append(
                {"uid": str(uid),
