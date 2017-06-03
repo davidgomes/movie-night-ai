@@ -9,8 +9,13 @@ api_key = ""
 dump = False
 
 class Movie:
-  def __init__(self, title, genres):
-    self.title = title
+  def __init__(self, header, genres):
+    h = header.split('(')
+    self.title = '('.join(h[0:-1])
+    try:
+        self.year = int(h[-1].strip()[:4])
+    except:
+        self.year = '1888'
     self.genres = genres
     self.genres.sort()
     self.image_link = image_default
