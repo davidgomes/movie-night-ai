@@ -7,7 +7,7 @@ import "./game-page.css";
 
 let cards = [];
 
-for (let i = 0; i < 55; i++) {
+for (let i = 0; i < 100; i++) {
     cards.push({ id:i.toString() });
 }
 
