@@ -167,13 +167,13 @@ def movie():
             "message": "Try again later",
         })
     elif res == 2:
-        podium = []
-        if len(podium) == 0:
+        if movie == None:
             return json.dumps({
                 "status": "retry",
                 "message": "Try again later",
             })
         else:
+            podium = []
             for m in movie:
                 podium.append(
                    {"uid": str(uid),
@@ -181,10 +181,10 @@ def movie():
                     "title": m.title,
                     "genres": m.genres}
                 )
-        return json.dumps({
-            "message": "Game ended",
-            "podium": podium
-        })
+            return json.dumps({
+                "message": "Game ended",
+                "podium": podium
+            })
     else:
         return json.dumps({
             "uid": str(uid),
@@ -216,4 +216,4 @@ def vote():
 
 
 if __name__ == "__main__":
-    app.run(threaded=True)
+    app.run(threaded=True, debug=True)
