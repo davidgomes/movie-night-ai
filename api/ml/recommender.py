@@ -30,6 +30,7 @@ class Ml:
   id_map = {}
   p_bitmask = []
   n_bitmask = []
+  max_popularity = 0
   greedy_iterations = 10
 
   def __init__(self, debug=False):
@@ -47,8 +48,6 @@ class Ml:
 
       for movie in movie_reader:
         movie_object = Movie(movie[1], self.separate(movie[2]))
-        if movie_object.year < self.start_year:
-          continue
 
         self.id_map[movie[0]] = len(self.movie_list)
         self.movie_list.append(movie_object)
@@ -115,15 +114,12 @@ class Ml:
 
         for image in images_reader:
           movie_id, image_path = image
-
-          if int(movie_id) >= self.n_movies:
-            continue
-
           self.movie_list[int(movie_id)].image_link = image_path
 
     for i in range(self.n_movies):
       self.p_bitmask[i].sort()
       self.n_bitmask[i].sort()
+      self.max_popularity = max(self.max_popularity, len(self.p_bitmask[i]) - len(self.n_bitmask[i]))
 
     if debug:
       print("Loaded ratings")
@@ -160,10 +156,10 @@ class Ml:
 
       item_cf_factor = item_cf_factor_p / item_cf_normalize_p
       content_factor = self.jacobbi(self.movie_list[movie].genres, self.movie_list[movies[i]].genres)
-      popularity_factor = (1.0 + len(self.p_bitmask[movie]) - len(self.n_bitmask[movie])) / (1.0 + len(self.p_bitmask[movie]) + len(self.n_bitmask[movie]))
+      popularity_factor = (1.0 + len(self.p_bitmask[movie]) - len(self.n_bitmask[movie])) / (1.0 + self.max_popularity)
       time_factor = 1.0 / math.sqrt(1 + abs(self.movie_list[movie].year - self.movie_list[movies[i]].year))
 
-      result += ratings[i] * (item_cf_factor * 0.6 + content_factor * 0.15 + popularity_factor * 0.1 + time_factor * 0.15)
+      result += ratings[i] * (item_cf_factor * 0.3 + content_factor * 0.1 + popularity_factor * 0.5 + time_factor * 0.1)
 
     return max(result, 0)
 
@@ -189,7 +185,7 @@ class Ml:
     if len(movie_pairs) == 0:
       res = list(np.random.choice(self.n_movies, num_sample, replace=False))
     else:
-      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 200, 700), replace=False))
+      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 500, 2000), replace=False)) if self.movie_list[i].year >= self.start_year]
 
       ratings = [i[0] for i in movie_pairs]
       movies  = [i[1] for i in movie_pairs]
