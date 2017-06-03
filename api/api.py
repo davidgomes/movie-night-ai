@@ -59,7 +59,7 @@ class Pool:
         if user.cur_movie >= len(self.movies):
             check = self.check_next(user.cur_movie)
             if check == 1:
-                votes = sum_votes(self, user)
+                votes = self.sum_votes(user)
                 print(votes)
                 self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25)) )
                 print(self.movies)
@@ -67,12 +67,12 @@ class Pool:
                 movie = ml.movie_list[self.movies[user.cur_movie]]
                 return (0, movie)
             elif check == 2:
-                return (2, movie)
+                return (2, None)
             else:
                 return (1, None)
         else:
             movie = ml.movie_list[self.movies[user.cur_movie]]
-            return movie
+            return (0, movie)
     def increment_user_movie(self, uid):
         self.users[uid].cur_movie += 1
     def put_user_vote(self, uid, vote):
@@ -149,7 +149,6 @@ def movie():
             "title": movie.title,
             "genres": movie.genres
         })
-
 
 
 @app.route("/api/room/vote", methods=["POST"])
