@@ -32,7 +32,6 @@ class GamePage extends React.Component {
         if (nextProps.currentMovie > this.props.currentMovie) {
             cards[nextProps.currentMovie].image = nextProps.movie.image;
             cards[nextProps.currentMovie].title = nextProps.movie.title;
-            cards[nextProps.currentMovie].text = "hey";
         }
     }
 

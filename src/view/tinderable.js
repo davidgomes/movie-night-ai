@@ -67,7 +67,6 @@ class Card extends React.Component {
         return (
             <div style={style} className={classes}>
                 <h1>{this.props.title}</h1>
-                <p>{this.props.text}</p>
             </div>
         );
     }
