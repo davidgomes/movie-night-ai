@@ -24,7 +24,7 @@ class Ml:
   id_map = {}
   p_bitmask = []
   n_bitmask = []
-  greedy_iterations = 50
+  greedy_iterations = 10
 
   def __init__(self, debug=False):
     if debug:
@@ -166,7 +166,7 @@ class Ml:
     if len(movie_pairs) == 0:
       res = list(np.random.choice(self.n_movies, num_sample, replace=False))
     else:
-      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 1000, 5000), replace=False))
+      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 800, 2000), replace=False))
 
       ratings = [i[0] for i in movie_pairs]
       movies  = [i[1] for i in movie_pairs]
@@ -176,7 +176,7 @@ class Ml:
           del sample_list[sample_list.index(movie)]
 
       rating_list = [(movie, self.rate(movie, movies, ratings)) for movie in sample_list]
-      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((4 + 200 * funnel) * num_sample)]
+      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((3 + 100 * funnel) * num_sample)]
 
       # Greedy optimization for most distinct
       best_score = 10000
