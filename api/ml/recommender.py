@@ -10,6 +10,7 @@ class Movie:
   def __init__(self, title, genres):
     self.title = title
     self.genres = genres
+    self.image_id = 5
 
 class Ml:
   n_movies = 0

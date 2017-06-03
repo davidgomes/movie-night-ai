@@ -5,6 +5,9 @@ import uuid
 from random import randint
 from flask_cors import CORS, cross_origin
 from ml.recommender import Ml
+import urllib.request
+
+rooms = {}
 ml = Ml()
 
 app = Flask(__name__)
@@ -22,32 +25,31 @@ class Pool:
     def add_user(self, uid):
         self.users[uid] = User(uid, 0)
     def get_user_movie(self, uid):
+        print(self.users)
         user = self.users[uid]
         if user.cur_movie >= len(self.movies):
             self.movies.extend(ml.get_pool([]))
 
-        movie = self.movies[user.cur_movie]
+        movie = ml.movie_list[self.movies[user.cur_movie]]
         return movie
     def increment_user_movie(self, uid):
         self.users[uid].cur_movie += 1
 
-rooms = {}
-
 @app.route("/api/room", methods=["POST"])
 def create_room():
     room_num = ("%d" % randint(0, 100)).zfill(2)
-    uid = uuid.uuid4()
+    uid = str(uuid.uuid4())
 
     rooms[room_num] = Pool()
     rooms[room_num].add_user(uid)
     return json.dumps({
         "name": room_num,
-        "uid": str(uid)
+        "uid": uid
     })
 
 @app.route("/api/room/join", methods=["POST"])
 def join_room():
-    uid = uuid.uuid4()
+    uid = str(uuid.uuid4())
 
     if request.json == None:
         abort(400, "Expected json data")
@@ -59,7 +61,7 @@ def join_room():
         abort(400, "Unknown room")
     rooms[room].add_user(uid)
     return json.dumps({
-        "uid": str(uid)
+        "uid": uid
     })
 
 @app.route("/api/room/movie", methods=["GET"])
@@ -72,10 +74,15 @@ def movie():
 
     movie = rooms[room].get_user_movie(uid)
     print(movie)
-    return json.dumps({
-        "uid": str(uid)
-    })
 
+    #
+    return json.dumps({
+        "uid": str(uid),
+        "image": movie.image_link,
+        "title": movie.title,
+        "genres": movie.genres
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
+
