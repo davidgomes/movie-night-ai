@@ -29,6 +29,7 @@ const reducer = (state = { currentMovie: -1 }, action) => {
                     ...state,
                     gameEnded: true,
                     podium: action.payload.podium,
+                    waitForOthers: false,
                 };
             }
         } else {
@@ -36,6 +37,7 @@ const reducer = (state = { currentMovie: -1 }, action) => {
                 ...state,
                 movie: action.payload,
                 currentMovie: state.currentMovie + 1,
+                waitForOthers: false,
             };
         }
     }
