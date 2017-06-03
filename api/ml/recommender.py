@@ -15,7 +15,7 @@ class Movie:
     try:
         self.year = int(h[-1].strip()[:4])
     except:
-        self.year = '1888'
+        self.year = 1888
     self.genres = genres
     self.genres.sort()
     self.image_link = image_default
@@ -45,8 +45,12 @@ class Ml:
       movie_reader = csv.reader(csvfile, delimiter=',')
 
       for movie in movie_reader:
+        movie_object = Movie(movie[1], self.separate(movie[2]))
+        if movie_object.year < 2000:
+          continue
+
         self.id_map[movie[0]] = len(self.movie_list)
-        self.movie_list.append(Movie(movie[1], self.separate(movie[2])))
+        self.movie_list.append(movie_object)
         self.p_bitmask.append([])
         self.n_bitmask.append([])
 
@@ -62,6 +66,9 @@ class Ml:
       for rating in rating_reader:
         user_id, movie_id, r_type = rating
 
+        if self.id_map.get(movie_id) == None:
+          continue
+
         if int(r_type) == 1:
           self.p_bitmask[self.id_map[movie_id]].append(int(user_id) - 1)
         elif int(r_type) == -1:
@@ -76,6 +83,10 @@ class Ml:
           for link in links_reader:
             try:
               movie_id, _, tmbd_id = link
+
+              if self.id_map.get(movie_id) == None:
+                continue
+
               json_result = json.loads(http.request('GET', (
                 image_find_url % (int(tmbd_id), api_key))).data.decode())
 
@@ -103,6 +114,10 @@ class Ml:
 
         for image in images_reader:
           movie_id, image_path = image
+
+          if int(movie_id) >= self.n_movies:
+            continue
+
           self.movie_list[int(movie_id)].image_link = image_path
 
     for i in range(self.n_movies):
@@ -204,7 +219,7 @@ if __name__ == "__main__":
   data_folder = "data"
   m = Ml(debug=True)
 
-  test_id = 7190
+  test_id = 1200
   print("Recommending from: ")
   print(m.movie_list[test_id])
   print("")

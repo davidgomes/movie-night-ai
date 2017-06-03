@@ -77,8 +77,7 @@ class Pool:
                     more_movies = 3
 
                 self.block = True
-#                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25), more_movies))
-                self.movies.extend(ml.get_pool([], 0.3, more_movies))
+                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25), more_movies))
                 self.block = False
 
                 movie = ml.movie_list[self.movies[user.cur_movie]]
