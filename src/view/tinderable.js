@@ -251,7 +251,6 @@ class Tinderable extends React.Component {
     }
 
     render() {
-        console.log(cards);
         var cards = this.state.cards.map(function(c, index, coll) {
             var props = {
                 cardId: c.id,

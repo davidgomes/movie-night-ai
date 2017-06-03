@@ -22,3 +22,15 @@ export function fetchNextMovie(userId, roomName) {
            );
     };
 };
+
+export function voteCurrentMovie(userId, roomName, vote) {
+    return dispatch => {
+        api.voteCurrentMovie(userId, roomName, vote)
+           .then(
+               data => {
+                   dispatch(fetchNextMovie(userId, roomName))
+               },
+               err => console.error(err)
+           );
+    };
+}

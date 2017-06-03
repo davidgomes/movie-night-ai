@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import Tinderable from "./tinderable";
-import { fetchNextMovie } from "../actions";
+import { voteCurrentMovie, fetchNextMovie } from "../actions";
 
 import "./game-page.css";
 
@@ -34,19 +34,19 @@ class GamePage extends React.Component {
 
     handleSwipeLeft = () => {
         const { uid, roomName } = this.props;
-        this.props.dispatch(fetchNextMovie(uid, roomName));
+        this.props.dispatch(voteCurrentMovie(uid, roomName, -1));
         this.setState({ fetchedMovie: false });
     };
 
     handleSwipeRight = () => {
         const { uid, roomName } = this.props;
-        this.props.dispatch(fetchNextMovie(uid, roomName));
+        this.props.dispatch(voteCurrentMovie(uid, roomName, 1));
         this.setState({ fetchedMovie: false });
     };
 
     handleSwipeBottom = () => {
         const { uid, roomName } = this.props;
-        this.props.dispatch(fetchNextMovie(uid, roomName));
+        this.props.dispatch(voteCurrentMovie(uid, roomName, 2));
         this.setState({ fetchedMovie: false });
     };
 

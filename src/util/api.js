@@ -13,6 +13,21 @@ export default {
         );
     },
 
+    voteCurrentMovie: (userId, roomName, vote) => {
+        return xr({
+            method: "POST",
+            url: `${API_HOST}/api/room/vote`,
+            data: {
+                uid: userId,
+                room: roomName,
+                vote: vote,
+            }
+        }).then(
+            res => res.data,
+            err => err
+        );
+    },
+
     fetchNextMovie: (userId, roomName) => {
         return xr({
             method: "POST",
