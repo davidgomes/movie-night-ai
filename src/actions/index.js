@@ -4,6 +4,7 @@ export const CREATE_ROOM = "CREATE_ROOM";
 export const JOIN_ROOM = "JOIN_ROOM";
 export const FETCH_NEXT_MOVIE = "FETCH_NEXT_MOVIE";
 export const REQUEST_NEXT_MOVIE = "REQUEST_NEXT_MOVIE";
+export const NUMBER_OF_PLAYERS_IN_ROOM = "NUMBER_OF_PLAYERS_IN_ROOM";
 
 export function createRoom() {
     return dispatch => {
@@ -22,6 +23,16 @@ export function joinRoom(roomName) {
                data => dispatch({ type: JOIN_ROOM, payload: data }),
                err => console.error(err)
            );
+    };
+}
+
+export function getNumberOfPlayersInRoom(roomName) {
+    return dispatch => {
+        api.numberOfPlayersInRoom(roomName)
+            .then(
+                data => dispatch({type: NUMBER_OF_PLAYERS_IN_ROOM, payload: data}),
+                err => console.error(err)
+            );
     };
 }
 

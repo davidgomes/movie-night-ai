@@ -3,14 +3,18 @@ import _ from "lodash";
 import { connect } from "react-redux";
 import Tinderable from "./tinderable";
 import classnames from "classnames";
-import { voteCurrentMovie, fetchNextMovie } from "../actions";
+import {
+    voteCurrentMovie,
+    fetchNextMovie,
+    getNumberOfPlayersInRoom
+} from "../actions";
 
 import "./game-page.css";
 
 let cards = [];
 
 for (let i = 0; i < 100; i++) {
-    cards.push({ id:i.toString() });
+    cards.push({ id: i.toString() });
 }
 
 class GamePage extends React.Component {
@@ -18,6 +22,7 @@ class GamePage extends React.Component {
         super(props);
         this.state = {
             fetchedMovie: false,
+            startedRoomUsersPoller: false,
         };
     }
 
@@ -34,6 +39,16 @@ class GamePage extends React.Component {
         if (nextProps.currentMovie > this.props.currentMovie) {
             cards[nextProps.currentMovie].image = nextProps.movie.image;
             cards[nextProps.currentMovie].title = nextProps.movie.title;
+        }
+
+        if (nextProps.roomName && !this.state.startedRoomUsersPoller) {
+            setInterval(() => {
+                this.props.dispatch(getNumberOfPlayersInRoom(this.props.roomName));
+            }, 2000);
+
+            this.setState({
+                startedRoomUsersPoller: true,
+            });
         }
     }
 
@@ -103,6 +118,7 @@ class GamePage extends React.Component {
             <div className="game-page">
                 <div className="top-bar">
                     <b>Room</b> {this.props.roomName}
+                    <span className="num-users">{this.props.numberOfUsers}</span>
                 </div>
 
                 {this.props.waitForOthers || this.props.gameEnded ? undefined : (
@@ -128,4 +144,5 @@ export default connect(s => ({
     gameEnded: s.gameEnded,
     podium: s.podium,
     loadingMovie: s.loadingMovie,
+    numberOfUsers: s.numberOfUsers,
 }))(GamePage);
