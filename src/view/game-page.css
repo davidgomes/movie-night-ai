@@ -1,0 +1,17 @@
+.game-page {
+    width: 100%;
+    height: 100%;
+}
+
+.game-page #cards {
+    width: 100%;
+    height: 100%;
+}
+
+.game-page #cards .card {
+    border: none;
+}
+
+.game-page #cards h1 {
+    color: white;
+}

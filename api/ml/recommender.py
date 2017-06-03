@@ -24,7 +24,7 @@ class Ml:
   id_map = {}
   p_bitmask = []
   n_bitmask = []
-  greedy_iterations = 40
+  greedy_iterations = 50
 
   def __init__(self, debug=False):
     if debug:
@@ -51,7 +51,7 @@ class Ml:
       print("Loaded movies")
       print("Loaded ratings")
 
-    with open(data_folder + '/ratings.csv', 'r') as csvfile:
+    with open(data_folder + '/ratings_cap.csv', 'r') as csvfile:
       rating_reader = csv.reader(csvfile, delimiter=',')
 
       for rating in rating_reader:
@@ -134,16 +134,13 @@ class Ml:
 
     result = 0
     for i in range(len(movies)):
-      item_cf_factor_p = 1 + self.cos_metric(self.p_bitmask[movie], self.p_bitmask[movies[i]])
+      item_cf_factor_p = 1.0 + self.cos_metric(self.p_bitmask[movie], self.p_bitmask[movies[i]])
       item_cf_normalize_p = 1 + len(self.p_bitmask[movie]) * len(self.p_bitmask[movies[i]])
 
-      item_cf_factor_n = 1 + self.cos_metric(self.n_bitmask[movie], self.n_bitmask[movies[i]])
-      item_cf_normalize_n = 1 + len(self.n_bitmask[movie]) * len(self.n_bitmask[movies[i]])
-
-      item_cf_factor = item_cf_factor_p / item_cf_normalize_p + item_cf_factor_n / item_cf_normalize_n
+      item_cf_factor = item_cf_factor_p / item_cf_normalize_p
       content_factor = self.jacobbi(self.movie_list[movie].genres, self.movie_list[movies[i]].genres)
 
-      result += ratings[i] * (item_cf_factor * 0.8 + content_factor * 0.2)
+      result += ratings[i] * (item_cf_factor * 0.7 + content_factor * 0.3)
 
     return result
 
@@ -159,7 +156,7 @@ class Ml:
         item_cf_factor = item_cf_factor_p / item_cf_normalize_p
         content_factor = self.jacobbi(self.movie_list[movie_set[i]].genres, self.movie_list[movie_set[j]].genres)
 
-        result += item_cf_factor * 0.8 + content_factor * 0.2
+        result += item_cf_factor * 0.7 + content_factor * 0.3
 
     return result
 
@@ -182,13 +179,13 @@ class Ml:
       chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((4 + 200 * funnel) * num_sample)]
 
       # Greedy optimization for most distinct
-      best_score = -1
+      best_score = 10000
       best_set = []
       for i in range(self.greedy_iterations):
         attempt_set = list(np.random.choice(chosen_list, num_sample, replace=False))
         attempt_score = self.score(attempt_set)
         
-        if attempt_score > best_score:
+        if attempt_score < best_score:
           best_score = attempt_score
           best_set = attempt_set
       
@@ -201,22 +198,22 @@ if __name__ == "__main__":
   data_folder = "data"
   m = Ml(debug=True)
 
-  test_id = 4688
+  test_id = 7190
   print("Recommending from: ")
   print(m.movie_list[test_id])
-  print()
+  print("")
 
   for i in m.get_pool([(1, test_id)], 0.4):
     print(m.movie_list[i])
     print(i)
 
-  print()
+  print("")
 
   for i in m.get_pool([(1, test_id)], 0.1):
     print(m.movie_list[i])
     print(i)
 
-  print()
+  print("")
 
   for i in m.get_pool([(1, test_id)], 0.05):
     print(m.movie_list[i])

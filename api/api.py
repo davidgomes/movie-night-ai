@@ -28,8 +28,10 @@ class Pool:
     def __init__(self):
         self.movies = []
         self.users = {}
+
     def add_user(self, uid):
         self.users[uid] = User(uid, 0)
+
     def check_next(self, cur_movie):
         global ROUNDS
         if cur_movie == ROUNDS * 5:
@@ -41,6 +43,7 @@ class Pool:
             print("Can move to next")
             return 1
         return 0
+        
     def sum_votes(self, user):
         votes = np.array([0] * len(user.votes))
         for u in self.users.values():
@@ -73,8 +76,10 @@ class Pool:
         else:
             movie = ml.movie_list[self.movies[user.cur_movie]]
             return (0, movie)
+
     def increment_user_movie(self, uid):
         self.users[uid].cur_movie += 1
+
     def put_user_vote(self, uid, vote):
         user = self.users[uid]
 

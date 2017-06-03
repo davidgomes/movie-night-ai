@@ -12,4 +12,46 @@ export default {
             err => err
         );
     },
+
+    joinRoom: (roomName) => {
+        return xr({
+            method: "POST",
+            url: `${API_HOST}/api/room/join`,
+            data: {
+                room: roomName,
+            }
+        }).then(
+            res => res.data,
+            err => err
+        );
+    },
+
+    voteCurrentMovie: (userId, roomName, vote) => {
+        return xr({
+            method: "POST",
+            url: `${API_HOST}/api/room/vote`,
+            data: {
+                uid: userId,
+                room: roomName,
+                vote: vote,
+            }
+        }).then(
+            res => res.data,
+            err => err
+        );
+    },
+
+    fetchNextMovie: (userId, roomName) => {
+        return xr({
+            method: "POST",
+            url: `${API_HOST}/api/room/movie`,
+            data: {
+                uid: userId,
+                room: roomName,
+            }
+        }).then(
+            res => res.data,
+            err => err
+        );
+    },
 };
