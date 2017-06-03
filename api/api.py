@@ -84,7 +84,7 @@ class Pool:
 
                 return (0, movie)
             elif check == 2:
-                votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes(user)], key=lambda x: -x[0] )[:3]
+                votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes()], key=lambda x: -x[0] )[:3]
                 votes = [i for _,i in votes]
                 return (2, votes)
             else:
