@@ -1,18 +1,22 @@
-import csv, math
+import csv, math, urllib3, json
 import numpy as np
-from bitarray import bitarray
 
-data_folder = 'ml/data'
+data_folder    = 'ml/data'
+image_find_url = "http://api.themoviedb.org/3/movie/%d/images?api_key=%s"
+image_base_url = "http://image.tmdb.org/t/p/w500%s"
+image_default  = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png"
+api_key = ""
+dump = False
 
 class Movie:
-  image_id = 0
-
   def __init__(self, title, genres):
     self.title = title
     self.genres = genres
+    self.genres.sort()
+    self.image_link = image_default
 
   def __str__(self):
-    return self.title + ", " + str(self.genres)
+    return self.title + ", " + str(self.genres) + ", " + self.image_link
 
 class Ml:
   n_movies = 0
@@ -25,6 +29,12 @@ class Ml:
   def __init__(self, debug=False):
     if debug:
       print("Loading movies")
+
+    try:
+      import apikey
+      api_key = apikey.api_key
+    except:
+      api_key = ""
     
     with open(data_folder + '/movies.csv', 'r') as csvfile:
       movie_reader = csv.reader(csvfile, delimiter=',')
@@ -52,6 +62,44 @@ class Ml:
         elif int(r_type) == -1:
           self.n_bitmask[self.id_map[movie_id]].append(int(user_id) - 1)
 
+    if dump:
+      if api_key != "":
+        with open(data_folder + '/links.csv', 'r') as csvfile:
+          links_reader = csv.reader(csvfile, delimiter=',')
+          http = urllib3.PoolManager()
+
+          for link in links_reader:
+            try:
+              movie_id, _, tmbd_id = link
+              json_result = json.loads(http.request('GET', (
+                image_find_url % (int(tmbd_id), api_key))).data.decode())
+
+              for result in json_result['posters']:
+                if result["aspect_ratio"] > 0.64 and result["aspect_ratio"] < 0.68 and (result["iso_639_1"] == "en" or result["iso_639_1"] == None):
+                  self.movie_list[self.id_map[movie_id]].image_link = image_base_url % result["file_path"]
+                  break
+
+              if debug and self.id_map[movie_id] % 10 == 0:
+                print("Processing first %d, %d left" % (self.id_map[movie_id], self.n_movies - self.id_map[movie_id]))
+            except:
+              pass
+
+        with open(data_folder + '/images.csv', 'w') as csvfile:
+          imagewriter = csv.writer(csvfile, delimiter=',',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+          movie_id = 0
+          for movie in self.movie_list:
+            imagewriter.writerow([movie_id, movie.image_link])
+            movie_id += 1
+    else:
+      with open(data_folder + '/images.csv', 'r') as csvfile:
+        images_reader = csv.reader(csvfile, delimiter=',')
+
+        for image in images_reader:
+          movie_id, image_path = image
+          self.movie_list[int(movie_id)].image_link = image_path
+
     for i in range(self.n_movies):
       self.p_bitmask[i].sort()
       self.n_bitmask[i].sort()
@@ -61,6 +109,9 @@ class Ml:
 
   def separate(self, wd):
     return wd.split("|")
+
+  def jacobbi(self, ls1, ls2):
+    return float(len(np.intersect1d(ls1, ls2))) / len(np.union1d(ls1, ls2))
 
   def cos_metric(self, movie_a, movie_b):
     id_a, id_b = (0, 0)
@@ -83,19 +134,34 @@ class Ml:
 
     result = 0
     for i in range(len(movies)):
-      result += ratings[i] * (
-        self.cos_metric(self.p_bitmask[movie], self.p_bitmask[movies[i]]) +
-        self.cos_metric(self.n_bitmask[movie], self.n_bitmask[movies[i]]))
+      item_cf_factor_p = 1 + self.cos_metric(self.p_bitmask[movie], self.p_bitmask[movies[i]])
+      item_cf_normalize_p = 1 + len(self.p_bitmask[movie]) * len(self.p_bitmask[movies[i]])
+
+      item_cf_factor_n = 1 + self.cos_metric(self.n_bitmask[movie], self.n_bitmask[movies[i]])
+      item_cf_normalize_n = 1 + len(self.n_bitmask[movie]) * len(self.n_bitmask[movies[i]])
+
+      item_cf_factor = item_cf_factor_p / item_cf_normalize_p + item_cf_factor_n / item_cf_normalize_n
+      content_factor = self.jacobbi(self.movie_list[movie].genres, self.movie_list[movies[i]].genres)
+
+      result += ratings[i] * (item_cf_factor * 0.8 + content_factor * 0.2)
 
     return result
 
   def score(self, movie_set):
+    assert len(movie_set) >= 2
     result = 0
+
     for i in range(len(movie_set)):
       for j in range(i + 1, len(movie_set)):
-        result += math.sqrt(self.cos_metric(self.p_bitmask[movie_set[i]], self.p_bitmask[movie_set[j]]))
+        item_cf_factor_p = 1 + self.cos_metric(self.p_bitmask[movie_set[i]], self.p_bitmask[movie_set[j]])
+        item_cf_normalize_p = 1 + len(self.p_bitmask[movie_set[i]]) * len(self.p_bitmask[movie_set[j]])
 
-    return -result
+        item_cf_factor = item_cf_factor_p / item_cf_normalize_p
+        content_factor = self.jacobbi(self.movie_list[movie_set[i]].genres, self.movie_list[movie_set[j]].genres)
+
+        result += item_cf_factor * 0.8 + content_factor * 0.2
+
+    return result
 
   def get_pool(self, movie_pairs, funnel=0.5, num_sample=5):
     res = []
@@ -116,13 +182,13 @@ class Ml:
       chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((4 + 200 * funnel) * num_sample)]
 
       # Greedy optimization for most distinct
-      best_score = 1
+      best_score = -1
       best_set = []
       for i in range(self.greedy_iterations):
         attempt_set = list(np.random.choice(chosen_list, num_sample, replace=False))
         attempt_score = self.score(attempt_set)
         
-        if attempt_score < best_score:
+        if attempt_score > best_score:
           best_score = attempt_score
           best_set = attempt_set
       
