@@ -82,7 +82,7 @@ class HomePage extends React.Component {
                     <h1>Movie Night AI</h1>
                     <h5>The mastermind that decides what movie your crew will watch tonight.</h5>
 
-                    <ul>
+                    <ul className="bottom-list">
                         {inner}
                     </ul>
                 </div>

@@ -53,12 +53,11 @@ class Card extends React.Component {
             WebkitTransform: initialTranslate,
             transform: initialTranslate,
             zIndex: this.props.index,
-            width: "80%",
-            height: "80%",
+            width: "70%",
+            height: "70%",
             backgroundImage: "url(\"" + this.props.image + "\")",
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
-            backgroundColor: "#f3f3f3",
         }, this.props.style);
 
         var classes = classnames({

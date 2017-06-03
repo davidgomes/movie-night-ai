@@ -64,18 +64,33 @@ class GamePage extends React.Component {
             "tinder-hidden": this.props.waitForOthers,
         }, "tinder-container");
 
+        let podium = [
+            {title:"hey", image: "http://image.tmdb.org/t/p/w500/frZj5djlU9hFEjMcL21RJZVuG5O.jpg"},
+            {title:"ho", image: "http://image.tmdb.org/t/p/w500/xBAzCqJ9OUySWBN8MpZrcVJqm5G.jpg"},
+            {title:"hi", image: "http://image.tmdb.org/t/p/w500/mYhwyUR3URv6tAQFmJBrnITumq2.jpg"},
+        ];
+
         let inner;
         if (this.props.gameEnded) {
-            inner = _.map(this.props.podium, (movie) => (
-                <div>
-                    {movie.title}
+            inner = (
+                <div className="movie-results">
+                    The mastermind AI recommends the following:
+                    {
+                        _.map(podium, (movie, index) => (
+                            <div key={index} className="movie-result">
+                                {index === 0 ? <img src={movie.image} /> : undefined }
+
+                                <div>{index + 1}. {movie.title}</div>
+                            </div>
+                        ))
+                    }
                 </div>
-            ));
+            );
         } else {
             inner = (
                 <div className={tinderParentClasses}>
                     {!this.props.waitForOthers ? undefined :
-                        <div>Wait a little bit for others!</div>}
+                        <div className="wait-little">Please wait for the others!</div>}
 
                     <Tinderable
                         initialCardsData={cards}
@@ -90,12 +105,16 @@ class GamePage extends React.Component {
         return (
             <div className="game-page">
                 <div className="top-bar">
-                    Room {this.props.roomName}
+                    <b>Room</b> {this.props.roomName}
                 </div>
 
-                <div className="left-helper">Not interested</div>
-                <div className="right-helper">Interested!</div>
-                <div className="bottom-helper">Seen it</div>
+                {this.props.waitForOthers || this.props.gameEnded ? undefined : (
+                    <div>
+                        <div className="left-helper">Not interested</div>
+                        <div className="right-helper">Interested!</div>
+                        <div className="bottom-helper">Seen it</div>
+                    </div>
+                )}
 
                 {inner}
             </div>
