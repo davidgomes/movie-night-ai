@@ -15,11 +15,15 @@ ml = Ml()
 app = Flask(__name__)
 CORS(app)
 
+ROUNDS = 8
+
 class User:
     def __init__(self, uid, cur_movie):
         self.uid = uid
         self.cur_movie = cur_movie
         self.votes = []
+
+    
 
 class Pool:
     def __init__(self):
@@ -30,43 +34,49 @@ class Pool:
         self.users[uid] = User(uid, 0)
 
     def check_next(self, cur_movie):
+        global ROUNDS
+        if cur_movie == ROUNDS * 5:
+            print('Finish game')
+            return 2
+
         cur = {u.cur_movie for u in self.users.values()}
         if len(cur) == 1 and cur.pop() == cur_movie:
             print("Can move to next")
-            return True
-        return False
+            return 1
+        return 0
+        
+    def sum_votes(self, user):
+        votes = np.array([0] * len(user.votes))
+        for u in self.users.values():
+            fixedVotes = []
+            for v in u.votes:
+                if v == 2:
+                    fixedVotes.append(-10000)
+                else:
+                    fixedVotes.append(v)
+            votes += np.array(fixedVotes)
+        votes = list(zip(self.movies, votes))
+        return votes
 
     def get_user_movie(self, uid):
         user = self.users[uid]
-
         if user.cur_movie >= len(self.movies):
-            if self.check_next(user.cur_movie):
-                votes = np.array([0] * len(user.votes))
-
-                for u in self.users.values():
-                    fixedVotes = []
-
-                    for v in u.votes:
-                        if v == 2:
-                            fixedVotes.append(-10000)
-                        else:
-                            fixedVotes.append(v)
-
-                    votes += np.array(fixedVotes)
-
-                votes = list(zip(self.movies, votes))
+            check = self.check_next(user.cur_movie)
+            if check == 1:
+                votes = self.sum_votes(user)
                 print(votes)
-
                 self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25)) )
                 print(self.movies)
                 
                 movie = ml.movie_list[self.movies[user.cur_movie]]
-                return movie
+                return (0, movie)
+            elif check == 2:
+                return (2, None)
             else:
-                return None
+                return (1, None)
         else:
             movie = ml.movie_list[self.movies[user.cur_movie]]
-            return movie
+            return (0, movie)
 
     def increment_user_movie(self, uid):
         self.users[uid].cur_movie += 1
@@ -110,7 +120,6 @@ def join_room():
     room = request.json["room"]
     if room not in rooms:
         abort(400, "Unknown room")
-
     rooms[room].add_user(uid)
     return json.dumps({
         "uid": uid
@@ -124,15 +133,20 @@ def movie():
     room = request.json["room"]
     uid = request.json["uid"]
 
+    res = None
     movie = None
     if room in rooms:
-        movie = rooms[room].get_user_movie(uid)
+        res, movie = rooms[room].get_user_movie(uid)
     else:
         print("Room not found")
 
-    if movie == None:
+    if res == 1:
         return json.dumps({
             "message": "Try again later",
+        })
+    elif res == 2:
+        return json.dumps({
+            "message": "Game ended",
         })
     else:
         return json.dumps({
@@ -141,6 +155,7 @@ def movie():
             "title": movie.title,
             "genres": movie.genres
         })
+
 
 @app.route("/api/room/vote", methods=["POST"])
 def vote():
@@ -162,5 +177,7 @@ def vote():
             "message": 'ok',
         })
 
+
 if __name__ == "__main__":
     app.run(debug=True)
+

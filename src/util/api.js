@@ -13,6 +13,19 @@ export default {
         );
     },
 
+    joinRoom: (roomName) => {
+        return xr({
+            method: "POST",
+            url: `${API_HOST}/api/room/join`,
+            data: {
+                room: roomName,
+            }
+        }).then(
+            res => res.data,
+            err => err
+        );
+    },
+
     voteCurrentMovie: (userId, roomName, vote) => {
         return xr({
             method: "POST",

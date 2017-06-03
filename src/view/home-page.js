@@ -1,13 +1,26 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { createRoom } from "../actions";
+import { createRoom, joinRoom } from "../actions";
 
 import "./home-page.css";
 
 class HomePage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { roomName: "" };
+    }
+
     handleClickCreate = () => {
         this.props.dispatch(createRoom());
+    };
+
+    handleClickJoin = () => {
+        this.props.dispatch(joinRoom(this.state.roomName));
+    };
+
+    handleChangeRoomName = (event) => {
+        this.setState({ roomName: event.target.value });
     };
 
     render() {
@@ -23,7 +36,17 @@ class HomePage extends React.Component {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/game">Join</Link>
+                        <input
+                            type="text"
+                            onChange={this.handleChangeRoomName}
+                        />
+
+                        <Link
+                            onClick={this.handleClickJoin}
+                            to="/game"
+                        >
+                            Join
+                        </Link>
                     </li>
                 </ul>
             </div>
