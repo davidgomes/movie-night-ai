@@ -6,11 +6,6 @@ import {
 let intervalId;
 
 const middleware = store => next => action => {
-    console.log(action.type === FETCH_NEXT_MOVIE);
-    console.log(action.payload.message);
-    console.log(action.payload.message === "Try again later");
-    console.log(!store.getState().waitForOthers);
-
     if (action.type === FETCH_NEXT_MOVIE &&
         action.payload.message &&
         action.payload.message === "Try again later" &&

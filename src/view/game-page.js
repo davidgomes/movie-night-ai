@@ -2,6 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
 import Tinderable from "./tinderable";
+import classnames from "classnames";
 import { voteCurrentMovie, fetchNextMovie } from "../actions";
 
 import "./game-page.css";
@@ -59,14 +60,12 @@ class GamePage extends React.Component {
             return null;
         }
 
+        let tinderParentClasses = classnames({
+            "tinder-hidden": this.props.waitForOthers,
+        }, "tinder-container");
+
         let inner;
-        if (this.props.waitForOthers) {
-            inner = (
-                <div>
-                    Wait a little bit for others!
-                </div>
-            );
-        } else if (this.props.gameEnded) {
+        if (this.props.gameEnded) {
             inner = _.map(this.props.podium, (movie) => (
                 <div>
                     {movie.title}
@@ -74,12 +73,17 @@ class GamePage extends React.Component {
             ));
         } else {
             inner = (
-                <Tinderable
-                    initialCardsData={cards}
-                    onSwipeLeft={this.handleSwipeLeft}
-                    onSwipeRight={this.handleSwipeRight}
-                    onSwipeBottom={this.handleSwipeBottom}
-                />
+                <div className={tinderParentClasses}>
+                    {!this.props.waitForOthers ? undefined :
+                        <div>Wait a little bit for others!</div>}
+
+                    <Tinderable
+                        initialCardsData={cards}
+                        onSwipeLeft={this.handleSwipeLeft}
+                        onSwipeRight={this.handleSwipeRight}
+                        onSwipeBottom={this.handleSwipeBottom}
+                    />
+                </div>
             );
         }
 
