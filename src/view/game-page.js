@@ -98,11 +98,9 @@ class GamePage extends React.Component {
         } else {
             inner = (
                 <div className={tinderParentClasses}>
-                    {!this.props.waitForOthers ? undefined :
-                        <div className="wait-little">Please wait for the others!</div>}
-
-                    {!this.props.loadingMovie ? undefined :
-                        <div className="wait-little">loading...</div>}
+                    {!this.props.waitForOthers ? (!this.props.loadingMovie ? undefined :
+                        <div className="wait-little">loading...</div>) :
+                        <div className="wait-little">Please wait a little bit for your friends to catch up!</div>}
 
                     <Tinderable
                         initialCardsData={cards}
