@@ -23,6 +23,9 @@ class Movie:
   def __str__(self):
     return self.title + ", " + str(self.genres) + ", " + self.image_link
 
+  def __repr__(self):
+    return '"' + self.title + '"'
+
 class Ml:
   start_year = 1997
   n_movies = 0
