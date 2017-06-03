@@ -1,8 +1,6 @@
 from flask import request, Flask, abort
 from werkzeug.exceptions import BadRequest
-import json
-import uuid
-import namelist
+import json, math, uuid, namelist
 from random import randint
 from flask_cors import CORS, cross_origin
 from ml.recommender import Ml
@@ -25,7 +23,7 @@ class User:
         return str(self.uid) + ", " + str(self.cur_movie)
 
 class Pool:
-    ROUNDS = 20
+    ROUNDS = 18
 
     def __init__(self):
         self.movies = []
@@ -40,19 +38,27 @@ class Pool:
             return 2
  
         cur = min([u.cur_movie for u in self.users.values()])
-        if cur_movie - cur <= 4:
+        if cur_movie - cur <= 5:
             return 1
         return 0
+
+    def round_value(self, round_number):
+        if round_number < 6:
+            return 1
+        return int(math.sqrt(round_number - 5) + 1)
 
     def sum_votes(self):
         votes = np.array([0] * max([len(u.votes) for u in self.users.values()]))
         for u in self.users.values():
             fixed_votes = []
+            round_number = 0
+
             for v in u.votes:
                 if v == 2:
                     fixed_votes.append(-10000)
                 else:
-                    fixed_votes.append(v)
+                    fixed_votes.append(v * self.round_value(round_number))
+                round_number += 1
             while len(fixed_votes) < len(votes):
                 fixed_votes.append(0)
             votes += np.array(fixed_votes)
@@ -66,6 +72,7 @@ class Pool:
             check = self.check_next(user.cur_movie)
             if check == 1:
                 if self.block:
+                    print("Blocked")
                     return (1, None)
 
                 votes = self.sum_votes()
@@ -75,7 +82,7 @@ class Pool:
                     more_movies = 5
 
                 self.block = True
-                self.movies.extend(ml.get_pool(list(votes), max(0, (6 - len(self.movies)) / 20), more_movies))
+                self.movies.extend(ml.get_pool(list(votes), max(0, (7 - len(self.movies)) / 15), more_movies))
                 self.block = False
 
                 movie = ml.movie_list[self.movies[user.cur_movie]]

@@ -4,7 +4,7 @@ if __name__ == "__main__":
   data_folder = 'data'
   rating_list = []
   movie_list = []
-  rat_cap = 1000000
+  rat_cap = 1500000
 
   with open(data_folder + '/movies.csv', 'r') as csvfile:
     movie_reader = csv.reader(csvfile, delimiter=',')
@@ -17,12 +17,16 @@ if __name__ == "__main__":
     ratings_reader = csv.reader(csvfile, delimiter=',')
 
     itera = 0
+    rat_number = 0
     for rating in ratings_reader:
       user_id, movie_id, r_type, _ = rating
 
       if movie_id in movie_list:
-        if float(r_type) >= 4:
-          rating_list.append((user_id, movie_id, -1 if float(r_type) <= 2 else 1))
+        rating_list.append((user_id, movie_id, -1 if float(r_type) < 3.5 else 1))
+        rat_number += 1
+
+        if rat_number > rat_cap:
+          break
 
       itera += 1
       if int(itera) % 100000 == 0:
@@ -32,10 +36,6 @@ if __name__ == "__main__":
     ratings_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
-    rat_number = 0
     for rating_row in rating_list:
       ratings_writer.writerow(rating_row)
-      rat_number += 1
 
-      if rat_number > rat_cap:
-        break

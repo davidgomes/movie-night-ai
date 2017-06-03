@@ -159,7 +159,7 @@ class Ml:
       popularity_factor = (1.0 + len(self.p_bitmask[movie]) - len(self.n_bitmask[movie])) / (1.0 + self.max_popularity)
       time_factor = 1.0 / math.sqrt(1 + abs(self.movie_list[movie].year - self.movie_list[movies[i]].year))
 
-      result += ratings[i] * (item_cf_factor * 0.4 + content_factor * 0.1 + popularity_factor * 0.4 + time_factor * 0.1)
+      result += ratings[i] * (item_cf_factor * 0.45 + content_factor * 0.2 + popularity_factor * 0.3 + time_factor * 0.05)
 
     return max(result, 0)
 
@@ -189,7 +189,8 @@ class Ml:
       chosen_list = list(np.random.choice(self.n_movies, min(num_sample * 700, 3000), replace=False))
       chosen_list = [i for i in chosen_list if
                      self.movie_list[i].year >= self.start_year and
-                     len(self.p_bitmask[i]) - len(self.n_bitmask[i]) >= self.max_popularity / 10]
+                     len(self.p_bitmask[i]) - len(self.n_bitmask[i]) >= self.max_popularity / 15 and
+                     self.movie_list[i].image_link != image_default]
 
       # Greedy optimization for most distinct
       best_score = 10000
@@ -204,7 +205,8 @@ class Ml:
       
       res = best_set
     else:
-      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 500, 2000), replace=False)) if self.movie_list[i].year >= self.start_year]
+      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 500, 2000), replace=False))
+                     if self.movie_list[i].year >= self.start_year and self.movie_list[i].image_link != image_default]
 
       ratings = [self.signal(i[1]) * math.sqrt(abs(i[1])) for i in movie_pairs]
       movies  = [i[0] for i in movie_pairs]
@@ -214,7 +216,7 @@ class Ml:
           del sample_list[sample_list.index(movie)]
 
       rating_list = [(movie, self.rate(movie, movies, ratings)) for movie in sample_list]
-      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((1.5 + 5 * funnel) * num_sample)]
+      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((2 + 4 * funnel) * num_sample)]
 
       # Greedy optimization for most distinct
       best_score = 10000
