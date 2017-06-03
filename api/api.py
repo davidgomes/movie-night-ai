@@ -211,9 +211,16 @@ def vote():
         })
     else:
         return json.dumps({
-            "message": 'ok',
+            "message": "ok",
         })
 
+@app.route("/api/room/players", methods=["POST"])
+def players():
+    if request.json == None or "room" not in request.json:
+        abort(400, "Invalid data: expected room")
+    return json.dumps({
+        "players": len(rooms[request.json["room"]].users),
+    })
 
 if __name__ == "__main__":
     app.run(threaded=True)
