@@ -24,6 +24,7 @@ class Movie:
     return self.title + ", " + str(self.genres) + ", " + self.image_link
 
 class Ml:
+  start_year = 1990
   n_movies = 0
   movie_list = []
   id_map = {}
@@ -46,7 +47,7 @@ class Ml:
 
       for movie in movie_reader:
         movie_object = Movie(movie[1], self.separate(movie[2]))
-        if movie_object.year < 2000:
+        if movie_object.year < self.start_year:
           continue
 
         self.id_map[movie[0]] = len(self.movie_list)
@@ -159,9 +160,10 @@ class Ml:
 
       item_cf_factor = item_cf_factor_p / item_cf_normalize_p
       content_factor = self.jacobbi(self.movie_list[movie].genres, self.movie_list[movies[i]].genres)
-      popularity_factor = len(self.p_bitmask[movie]) - len(self.n_bitmask[movie])
+      popularity_factor = (1.0 + len(self.p_bitmask[movie]) - len(self.n_bitmask[movie])) / (1.0 + len(self.p_bitmask[movie]) + len(self.n_bitmask[movie]))
+      time_factor = 1.0 / math.sqrt(1 + abs(self.movie_list[movie].year - self.movie_list[movies[i]].year))
 
-      result += ratings[i] * (item_cf_factor * 0.7 + content_factor * 0.2 + popularity_factor * 0.1)
+      result += ratings[i] * (item_cf_factor * 0.6 + content_factor * 0.15 + popularity_factor * 0.1 + time_factor * 0.15)
 
     return max(result, 0)
 
@@ -239,3 +241,5 @@ if __name__ == "__main__":
   for i in m.get_pool([(1, test_id)], 0.05):
     print(m.movie_list[i])
     print(i)
+
+  print(m.n_movies)
