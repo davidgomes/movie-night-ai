@@ -18,6 +18,8 @@ const reducer = (state = { currentMovie: -1 }, action) => {
             uid: action.payload.uid,
         };
     } else if (action.type === FETCH_NEXT_MOVIE) {
+        console.log(action.payload.message);
+
         if (action.payload.message) {
             if (action.payload.message === "Try again later") {
                 state = {
@@ -29,6 +31,7 @@ const reducer = (state = { currentMovie: -1 }, action) => {
                     ...state,
                     gameEnded: true,
                     podium: action.payload.podium,
+                    waitForOthers: false,
                 };
             }
         } else {
@@ -36,6 +39,7 @@ const reducer = (state = { currentMovie: -1 }, action) => {
                 ...state,
                 movie: action.payload,
                 currentMovie: state.currentMovie + 1,
+                waitForOthers: false,
             };
         }
     }

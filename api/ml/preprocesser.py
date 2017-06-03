@@ -4,7 +4,7 @@ if __name__ == "__main__":
   data_folder = 'data'
   rating_list = []
   movie_list = []
-  rat_cap = 1000000
+  rat_cap = 500000
 
   with open(data_folder + '/movies.csv', 'r') as csvfile:
     movie_reader = csv.reader(csvfile, delimiter=',')

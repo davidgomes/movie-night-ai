@@ -15,8 +15,6 @@ ml = Ml()
 app = Flask(__name__)
 CORS(app)
 
-ROUNDS = 3
-
 class User:
     def __init__(self, uid, cur_movie):
         self.uid = uid
@@ -25,16 +23,18 @@ class User:
 
 
 class Pool:
+    ROUNDS = 10
+
     def __init__(self):
         self.movies = []
         self.users = {}
+        self.block = False
 
     def add_user(self, uid):
         self.users[uid] = User(uid, 0)
 
     def check_next(self, cur_movie):
-        global ROUNDS
-        if cur_movie == ROUNDS * 5:
+        if cur_movie == self.ROUNDS:
             print('Finish game')
             return 2
 
@@ -47,13 +47,13 @@ class Pool:
     def sum_votes(self, user):
         votes = np.array([0] * len(user.votes))
         for u in self.users.values():
-            fixedVotes = []
+            fixed_votes = []
             for v in u.votes:
                 if v == 2:
-                    fixedVotes.append(-10000)
+                    fixed_votes.append(-10000)
                 else:
-                    fixedVotes.append(v)
-            votes += np.array(fixedVotes)
+                    fixed_votes.append(v)
+            votes += np.array(fixed_votes)
         votes = list(zip(self.movies, votes))
         return votes
 
@@ -64,10 +64,21 @@ class Pool:
             if check == 1:
                 votes = self.sum_votes(user)
                 print(votes)
-                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25)) )
+
+                more_movies = 2
+                if len(self.movies) == 0:
+                    more_movies = 3
+
+                if self.block:
+                    return (1, None)
+
+                self.block = True
+                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25), more_movies))
+                self.block = False
+
                 print(self.movies)
-                
                 movie = ml.movie_list[self.movies[user.cur_movie]]
+
                 return (0, movie)
             elif check == 2:
                 votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes(user)], key=lambda x: -x[0] )[:3]
@@ -131,7 +142,7 @@ def join_room():
 def movie():
     if request.json == None or "room" not in request.json or "uid" not in request.json:
         abort(400, "Invalid data")
-    
+
     room = request.json["room"]
     uid = request.json["uid"]
 
@@ -173,13 +184,13 @@ def movie():
 def vote():
     if request.json == None or "room" not in request.json or "uid" not in request.json or "vote" not in request.json:
         abort(400, "Invalid data")
-    
+
     room = request.json["room"]
     uid = request.json["uid"]
     vote = request.json["vote"]
 
     res = rooms[room].put_user_vote(uid, int(vote))
-    
+
     if res == False:
         return json.dumps({
             "message": "Already voted for all available movies",
@@ -192,4 +203,3 @@ def vote():
 
 if __name__ == "__main__":
     app.run(threaded=True)
-
