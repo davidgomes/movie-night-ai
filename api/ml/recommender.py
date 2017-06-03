@@ -139,10 +139,11 @@ class Ml:
 
       item_cf_factor = item_cf_factor_p / item_cf_normalize_p
       content_factor = self.jacobbi(self.movie_list[movie].genres, self.movie_list[movies[i]].genres)
+      popularity_factor = len(self.p_bitmask[movie]) - len(self.n_bitmask[movie])
 
-      result += ratings[i] * (item_cf_factor * 0.7 + content_factor * 0.3)
+      result += ratings[i] * (item_cf_factor * 0.7 + content_factor * 0.2 + popularity_factor * 0.1)
 
-    return result
+    return max(result, 0)
 
   def score(self, movie_set):
     assert len(movie_set) >= 2
@@ -156,7 +157,7 @@ class Ml:
         item_cf_factor = item_cf_factor_p / item_cf_normalize_p
         content_factor = self.jacobbi(self.movie_list[movie_set[i]].genres, self.movie_list[movie_set[j]].genres)
 
-        result += item_cf_factor * 0.7 + content_factor * 0.3
+        result += item_cf_factor * 0.4 + content_factor * 0.6
 
     return result
 
@@ -166,7 +167,7 @@ class Ml:
     if len(movie_pairs) == 0:
       res = list(np.random.choice(self.n_movies, num_sample, replace=False))
     else:
-      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 800, 2000), replace=False))
+      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 400, 1000), replace=False))
 
       ratings = [i[0] for i in movie_pairs]
       movies  = [i[1] for i in movie_pairs]
@@ -176,7 +177,7 @@ class Ml:
           del sample_list[sample_list.index(movie)]
 
       rating_list = [(movie, self.rate(movie, movies, ratings)) for movie in sample_list]
-      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((3 + 100 * funnel) * num_sample)]
+      chosen_list = [i[0] for i in sorted(rating_list, key=lambda movie_pair: movie_pair[1])][::-1][:int((3 + 50 * funnel) * num_sample)]
 
       # Greedy optimization for most distinct
       best_score = 10000
