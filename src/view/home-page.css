@@ -24,5 +24,9 @@
     list-style-type: none;
     padding: 0;
     text-align: center;
-    font-size: 32px;
+    font-size: 26px;
+}
+
+.home-page ul li {
+    padding-top: 30px;
 }

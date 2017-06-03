@@ -58,6 +58,7 @@ class Card extends React.Component {
             backgroundImage: "url(\"" + this.props.image + "\")",
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
+            backgroundColor: "#f3f3f3",
         }, this.props.style);
 
         var classes = classnames({
