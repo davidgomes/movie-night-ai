@@ -33,8 +33,30 @@ class Pool:
     def add_user(self, uid):
         self.users[uid] = User(uid, 0)
 
+    def metric_votes(self):
+        if len(self.movies) <= 7:
+            return False
+
+        votes = np.array([0] * max([len(u.votes) for u in self.users.values()]))
+        for u in self.users.values():
+            fixed_votes = []
+            round_number = 0
+
+            for v in u.votes:
+                if v == 1:
+                    fixed_votes.append(v)
+            while len(fixed_votes) < len(votes):
+                fixed_votes.append(0)
+            votes += np.array(fixed_votes)
+
+        votes = votes / len(self.users.values())
+        for vote in votes:
+            if vote > 0.8:
+                return True
+        return False
+
     def check_next(self, cur_movie):
-        if cur_movie >= self.ROUNDS:
+        if cur_movie >= self.ROUNDS or self.metric_votes():
             return 2
  
         cur = min([u.cur_movie for u in self.users.values()])
