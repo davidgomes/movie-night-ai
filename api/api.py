@@ -15,7 +15,7 @@ ml = Ml()
 app = Flask(__name__)
 CORS(app)
 
-ROUNDS = 8
+ROUNDS = 4
 
 class User:
     def __init__(self, uid, cur_movie):
@@ -23,7 +23,6 @@ class User:
         self.cur_movie = cur_movie
         self.votes = []
 
-    
 
 class Pool:
     def __init__(self):
@@ -44,7 +43,7 @@ class Pool:
             print("Can move to next")
             return 1
         return 0
-        
+
     def sum_votes(self, user):
         votes = np.array([0] * len(user.votes))
         for u in self.users.values():
@@ -71,7 +70,8 @@ class Pool:
                 movie = ml.movie_list[self.movies[user.cur_movie]]
                 return (0, movie)
             elif check == 2:
-                return (2, None)
+                votes = [(j, i) for i,j in self.sum_votes(user)]
+                return (2, votes)
             else:
                 return (1, None)
         else:
@@ -122,7 +122,8 @@ def join_room():
         abort(400, "Unknown room")
     rooms[room].add_user(uid)
     return json.dumps({
-        "uid": uid
+        "uid": uid,
+        "name": room,
     })
 
 @app.route("/api/room/movie", methods=["POST"])
@@ -179,5 +180,5 @@ def vote():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(threaded=True)
 
