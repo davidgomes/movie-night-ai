@@ -31,7 +31,7 @@ class Ml:
   p_bitmask = []
   n_bitmask = []
   max_popularity = 0
-  greedy_iterations = 10
+  greedy_iterations = 8
 
   def __init__(self, debug=False):
     if debug:
@@ -191,7 +191,7 @@ class Ml:
       # Greedy optimization for most distinct
       best_score = 10000
       best_set = []
-      for i in range(self.greedy_iterations * 5):
+      for i in range(self.greedy_iterations * 10):
         attempt_set = list(np.random.choice(chosen_list, num_sample, replace=False))
         attempt_score = self.score(attempt_set)
         
@@ -201,7 +201,7 @@ class Ml:
       
       res = best_set
     else:
-      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 600, 2500), replace=False)) if self.movie_list[i].year >= self.start_year]
+      sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 500, 2000), replace=False)) if self.movie_list[i].year >= self.start_year]
 
       ratings = [i[1] for i in movie_pairs]
       movies  = [i[0] for i in movie_pairs]
