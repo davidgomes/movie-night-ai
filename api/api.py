@@ -66,7 +66,7 @@ class Pool:
                 print(votes)
                 self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25)) )
                 print(self.movies)
-                
+
                 movie = ml.movie_list[self.movies[user.cur_movie]]
                 return (0, movie)
             elif check == 2:
@@ -130,7 +130,7 @@ def join_room():
 def movie():
     if request.json == None or "room" not in request.json or "uid" not in request.json:
         abort(400, "Invalid data")
-    
+
     room = request.json["room"]
     uid = request.json["uid"]
 
@@ -171,13 +171,13 @@ def movie():
 def vote():
     if request.json == None or "room" not in request.json or "uid" not in request.json or "vote" not in request.json:
         abort(400, "Invalid data")
-    
+
     room = request.json["room"]
     uid = request.json["uid"]
     vote = request.json["vote"]
 
     res = rooms[room].put_user_vote(uid, int(vote))
-    
+
     if res == False:
         return json.dumps({
             "message": "Already voted for all available movies",
@@ -190,4 +190,3 @@ def vote():
 
 if __name__ == "__main__":
     app.run(threaded=True)
-
