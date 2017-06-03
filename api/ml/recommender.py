@@ -161,8 +161,7 @@ class Ml:
 
       item_cf_factor = item_cf_factor_p / item_cf_normalize_p
       content_factor = self.jacobbi(self.movie_list[movie].genres, self.movie_list[movies[i]].genres)
-      popularity_factor = 0 if len(self.p_bitmask[movie]) - len(self.n_bitmask[movie]) <= else 
-        math.log((1.0 + len(self.p_bitmask[movie]) - len(self.n_bitmask[movie]))) / self.max_popularity
+      popularity_factor = 0 if len(self.p_bitmask[movie]) - len(self.n_bitmask[movie]) <= 0 else math.log((1.0 + len(self.p_bitmask[movie]) - len(self.n_bitmask[movie]))) / self.max_popularity
       time_factor = 1.0 / math.sqrt(1 + abs(self.movie_list[movie].year - self.movie_list[movies[i]].year))
 
       result += ratings[i] * (item_cf_factor * 0.45 + content_factor * 0.2 + popularity_factor * 0.3 + time_factor * 0.05)
