@@ -118,7 +118,10 @@ class GamePage extends React.Component {
             <div className="game-page">
                 <div className="top-bar">
                     <b>Room</b> {this.props.roomName}
-                    <span className="num-users">{this.props.numberOfUsers}</span>
+
+                    <span className="num-users">
+                        {_.isUndefined(this.props.numberOfUsers) ? null : this.props.numberOfUsers === 1 ? "Alone" : `${this.props.numberOfUsers} friends`}
+                    </span>
                 </div>
 
                 {this.props.waitForOthers || this.props.gameEnded ? undefined : (
