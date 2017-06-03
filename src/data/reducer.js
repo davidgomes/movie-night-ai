@@ -1,14 +1,20 @@
 import {
     CREATE_ROOM,
+    FETCH_NEXT_MOVIE,
 } from "../actions";
 
-const reducer = (state = {}, action) => {
-    console.log(action);
-
+const reducer = (state = { currentMovie: -1 }, action) => {
     if (action.type === CREATE_ROOM) {
         state = {
             ...state,
             name: action.payload.name,
+            uid: action.payload.uid,
+        };
+    } else if (action.type === FETCH_NEXT_MOVIE) {
+        state = {
+            ...state,
+            movie: action.payload,
+            currentMovie: state.currentMovie + 1,
         };
     }
 

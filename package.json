@@ -11,6 +11,7 @@
     "react-redux": "^5.0.5",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
+    "react-tinderable": "^0.1.8",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
     "xr": "^0.3.0"
