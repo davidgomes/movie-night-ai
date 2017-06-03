@@ -45,9 +45,13 @@ class Pool:
                         else:
                             fixedVotes.append(v)
                     votes += np.array(fixedVotes)
+                votes = list(zip(self.movies, votes))
                 print(votes)
-                self.movies.extend(ml.get_pool(list(votes)))
+                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25)) )
                 print(self.movies)
+                
+                movie = ml.movie_list[self.movies[user.cur_movie]]
+                return movie
             else:
                 return None
         else:
