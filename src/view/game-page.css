@@ -43,7 +43,7 @@
 .left-helper {
     color: red;
     position: absolute;
-    top: 50%;
+    top: 53%;
     transform: rotate(-90deg);
     transform-origin: left top 0;
     text-transform: uppercase;
@@ -81,6 +81,11 @@
     text-transform: uppercase;
     padding-top: 3px;
     padding-left: 6px;
+}
+
+.top-bar .num-users {
+    float: right;
+    padding-right: 3px;
 }
 
 .movie-results {
