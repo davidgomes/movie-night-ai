@@ -21,6 +21,8 @@ class User:
         self.cur_movie = cur_movie
         self.votes = []
 
+    def __srt__(self):
+        return str(self.uid) + ", " + str(self.cur_movie)
 
 class Pool:
     ROUNDS = 10
@@ -34,18 +36,18 @@ class Pool:
         self.users[uid] = User(uid, 0)
 
     def check_next(self, cur_movie):
-        if cur_movie == self.ROUNDS:
+        if cur_movie >= self.ROUNDS:
             print('Finish game')
             return 2
-
-        cur = {u.cur_movie for u in self.users.values()}
-        if len(cur) == 1 and cur.pop() == cur_movie:
+ 
+        cur = min([u.cur_movie for u in self.users.values()])
+        if cur_movie - cur <= 4:
             print("Can move to next")
             return 1
         return 0
 
-    def sum_votes(self, user):
-        votes = np.array([0] * len(user.votes))
+    def sum_votes(self):
+        votes = np.array([0] * max([len(u.votes) for u in self.users.values()]))
         for u in self.users.values():
             fixed_votes = []
             for v in u.votes:
@@ -53,30 +55,32 @@ class Pool:
                     fixed_votes.append(-10000)
                 else:
                     fixed_votes.append(v)
+            while len(fixed_votes) < len(votes):
+                fixed_votes.append(0)
             votes += np.array(fixed_votes)
         votes = list(zip(self.movies, votes))
         return votes
 
     def get_user_movie(self, uid):
         user = self.users[uid]
+
         if user.cur_movie >= len(self.movies):
             check = self.check_next(user.cur_movie)
             if check == 1:
-                votes = self.sum_votes(user)
-                print(votes)
+                if self.block:
+                    return (1, None)
+
+                votes = self.sum_votes()
 
                 more_movies = 2
                 if len(self.movies) == 0:
                     more_movies = 3
 
-                if self.block:
-                    return (1, None)
-
                 self.block = True
-                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25), more_movies))
+#                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25), more_movies))
+                self.movies.extend(ml.get_pool([], 0.3, more_movies))
                 self.block = False
 
-                print(self.movies)
                 movie = ml.movie_list[self.movies[user.cur_movie]]
 
                 return (0, movie)
@@ -90,8 +94,8 @@ class Pool:
             movie = ml.movie_list[self.movies[user.cur_movie]]
             return (0, movie)
 
-    def increment_user_movie(self, uid):
-        self.users[uid].cur_movie += 1
+    def increment_user_movie(self, user):
+        user.cur_movie += 1
 
     def put_user_vote(self, uid, vote):
         user = self.users[uid]
@@ -101,7 +105,7 @@ class Pool:
             return False
 
         user.votes.append(vote)
-        self.increment_user_movie(uid)
+        self.increment_user_movie(user)
         return True
 
 @app.route("/api/room", methods=["POST"])
@@ -172,6 +176,7 @@ def movie():
             "podium": podium
         })
     else:
+        print("TT: ", movie)
         return json.dumps({
             "uid": str(uid),
             "image": movie.image_link,
