@@ -122,7 +122,8 @@ def join_room():
         abort(400, "Unknown room")
     rooms[room].add_user(uid)
     return json.dumps({
-        "uid": uid
+        "uid": uid,
+        "name": room,
     })
 
 @app.route("/api/room/movie", methods=["POST"])
