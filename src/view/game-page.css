@@ -1,6 +1,8 @@
 .game-page {
     width: 100%;
     height: 100%;
+    display: flex;
+    background-color: #13151A;
 }
 
 .game-page .tinder-container {
@@ -15,6 +17,9 @@
 
 .game-page .tinder-container #cards .card {
     border: none;
+    display: flex;
+    background: none;
+    justify-content: flex-end;
 }
 
 .game-page .tinder-container #cards .card:not(:first-child) {
@@ -23,8 +28,91 @@
 
 .game-page .tinder-container #cards h1 {
     color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1em;
+    text-align: center;
+    position: relative;
+    bottom: 7px;
 }
 
 .tinder-container.tinder-hidden #cards {
     display: none;
+}
+
+.left-helper {
+    color: red;
+    position: absolute;
+    top: 50%;
+    transform: rotate(-90deg);
+    transform-origin: left top 0;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.right-helper {
+    color: #5ce45c;
+    font-weight: bold;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    text-align: center;
+    transform: rotate(90deg);
+    transform-origin: right top 0;
+    text-transform: uppercase;
+}
+
+.bottom-helper {
+    position: absolute;
+    bottom: 2px;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+    font-weight: bold;
+}
+
+.top-bar {
+    position: absolute;
+    width: 100%;
+    height: 25px;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding-top: 3px;
+    padding-left: 6px;
+}
+
+.movie-results {
+    top: 15%;
+    width: 100%;
+    position: absolute;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-result {
+    width: 100%;
+}
+
+.movie-result img {
+    width: 70%;
+    height: 70%;
+    margin-bottom: 5%;
+    margin-top: 5%;
+}
+
+.wait-little {
+    top: 20%;
+    width: 100%;
+    position: absolute;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
 }
