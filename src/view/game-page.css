@@ -1,6 +1,7 @@
 .game-page {
     width: 100%;
     height: 100%;
+    display: flex;
 }
 
 .game-page .tinder-container {
@@ -15,6 +16,9 @@
 
 .game-page .tinder-container #cards .card {
     border: none;
+    display: flex;
+    justify-content: flex-end;
+    border: 1px solid gray;
 }
 
 .game-page .tinder-container #cards .card:not(:first-child) {
@@ -22,9 +26,40 @@
 }
 
 .game-page .tinder-container #cards h1 {
-    color: white;
+    color: black;
 }
 
 .tinder-container.tinder-hidden #cards {
     display: none;
+}
+
+.left-helper {
+    color: red;
+    position: absolute;
+    top: 50%;
+    transform: rotate(-90deg);
+    transform-origin: left top 0;
+}
+
+.right-helper {
+    color: green;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: rotate(90deg);
+    transform-origin: right top 0;
+}
+
+.bottom-helper {
+    position: absolute;
+    bottom: 0;
+    left: 43%;
+    color: #4c4c4c;
+}
+
+.top-bar {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    border-bottom: 1px solid black;
 }

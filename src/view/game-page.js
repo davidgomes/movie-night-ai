@@ -89,7 +89,13 @@ class GamePage extends React.Component {
 
         return (
             <div className="game-page">
-                Room {this.props.roomName}
+                <div className="top-bar">
+                    Room {this.props.roomName}
+                </div>
+
+                <div className="left-helper">Not interested</div>
+                <div className="right-helper">Interested!</div>
+                <div className="bottom-helper">Seen it</div>
 
                 {inner}
             </div>
