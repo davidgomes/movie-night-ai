@@ -47,7 +47,7 @@ class Pool:
             return 1
         return int(math.sqrt(round_number - 5) + 1)
 
-    def sum_votes(self):
+    def sum_votes(self, final=False):
         votes = np.array([0] * max([len(u.votes) for u in self.users.values()]))
         for u in self.users.values():
             fixed_votes = []
@@ -55,9 +55,15 @@ class Pool:
 
             for v in u.votes:
                 if v == 2:
-                    fixed_votes.append(-10000)
+                    if final:
+                        fixed_votes.append(-10000)
+                    else:
+                        fixed_votes.append(1)
                 else:
-                    fixed_votes.append(v * self.round_value(round_number))
+                    if final:
+                        fixed_votes.append(v * self.round_value(round_number))
+                    else:
+                        fixed_votes.append(v)
                 round_number += 1
             while len(fixed_votes) < len(votes):
                 fixed_votes.append(0)
@@ -94,7 +100,9 @@ class Pool:
                     if u.cur_movie != user.cur_movie:
                         ending = False
                 if ending:
-                    votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes()], key=lambda x: -x[0] )[:3]
+                    votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes(final=True)], key=lambda x: -x[0] )
+                    print(votes)
+                    votes = votes[:3]
                     votes = [i for _,i in votes]
                     return (2, votes)
                 else:
