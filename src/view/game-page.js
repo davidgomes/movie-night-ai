@@ -72,7 +72,7 @@ class GamePage extends React.Component {
                     {
                         _.map(this.props.podium, (movie, index) => (
                             <div key={index} className="movie-result">
-                                {index === 0 ? <img src={movie.image} /> : undefined }
+                                {index === 0 ? <img alt="Movie Poster" src={movie.image} /> : undefined }
 
                                 <div>{index + 1}. {movie.title}</div>
                             </div>
@@ -85,6 +85,9 @@ class GamePage extends React.Component {
                 <div className={tinderParentClasses}>
                     {!this.props.waitForOthers ? undefined :
                         <div className="wait-little">Please wait for the others!</div>}
+
+                    {!this.props.loadingMovie ? undefined :
+                        <div className="wait-little">loading...</div>}
 
                     <Tinderable
                         initialCardsData={cards}
@@ -124,4 +127,5 @@ export default connect(s => ({
     waitForOthers: s.waitForOthers,
     gameEnded: s.gameEnded,
     podium: s.podium,
+    loadingMovie: s.loadingMovie,
 }))(GamePage);
