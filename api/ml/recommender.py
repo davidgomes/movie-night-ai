@@ -179,6 +179,9 @@ class Ml:
 
     return result
 
+  def signal(self, vl):
+    return -1 if vl < 0 else 1
+
   def get_pool(self, movie_pairs, funnel=0.5, num_sample=5):
     res = []
 
@@ -203,7 +206,7 @@ class Ml:
     else:
       sample_list = [i for i in list(np.random.choice(self.n_movies, min(num_sample * 500, 2000), replace=False)) if self.movie_list[i].year >= self.start_year]
 
-      ratings = [i[1] for i in movie_pairs]
+      ratings = [self.signal(i[1]) * math.sqrt(abs(i[1])) for i in movie_pairs]
       movies  = [i[0] for i in movie_pairs]
 
       for movie in movies:
