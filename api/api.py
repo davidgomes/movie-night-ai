@@ -69,7 +69,7 @@ class Pool:
                 movie = ml.movie_list[self.movies[user.cur_movie]]
                 return (0, movie)
             elif check == 2:
-                votes = [(j, i) for i,j in self.sum_votes(user)]
+                votes = sorted([(j, i) for i,j in self.sum_votes(user)])[:3]
                 return (2, votes)
             else:
                 return (1, None)
@@ -144,8 +144,17 @@ def movie():
             "message": "Try again later",
         })
     elif res == 2:
+        podium = []
+        for m in movie:
+            podium.append(
+               {"uid": str(uid),
+                "image": m.image_link,
+                "title": m.title,
+                "genres": m.genres}
+            )
         return json.dumps({
             "message": "Game ended",
+            "podium": podium
         })
     else:
         return json.dumps({
