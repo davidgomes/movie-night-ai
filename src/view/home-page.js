@@ -80,7 +80,7 @@ class HomePage extends React.Component {
             <div className="home-page">
                 <div>
                     <h1>Movie Night AI</h1>
-                    <h5>The mastermind that decides what movie your group will watch tonight.</h5>
+                    <h5>The mastermind that decides what movie your crew will watch tonight.</h5>
 
                     <ul>
                         {inner}
