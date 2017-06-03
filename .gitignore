@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/api/ml/apikey.py
 
 # production
 /build
@@ -26,3 +27,4 @@ yarn-error.log*
 /api/pip-selfcheck.json
 /api/pyvenv.cfg
 /api/lib64
+/api/ml/__pycache__/*
