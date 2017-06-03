@@ -64,19 +64,13 @@ class GamePage extends React.Component {
             "tinder-hidden": this.props.waitForOthers,
         }, "tinder-container");
 
-        let podium = [
-            {title:"hey", image: "http://image.tmdb.org/t/p/w500/frZj5djlU9hFEjMcL21RJZVuG5O.jpg"},
-            {title:"ho", image: "http://image.tmdb.org/t/p/w500/xBAzCqJ9OUySWBN8MpZrcVJqm5G.jpg"},
-            {title:"hi", image: "http://image.tmdb.org/t/p/w500/mYhwyUR3URv6tAQFmJBrnITumq2.jpg"},
-        ];
-
         let inner;
         if (this.props.gameEnded) {
             inner = (
                 <div className="movie-results">
                     The mastermind AI recommends the following:
                     {
-                        _.map(podium, (movie, index) => (
+                        _.map(this.props.podium, (movie, index) => (
                             <div key={index} className="movie-result">
                                 {index === 0 ? <img src={movie.image} /> : undefined }
 
