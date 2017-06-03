@@ -25,7 +25,6 @@ class Pool:
     def add_user(self, uid):
         self.users[uid] = User(uid, 0)
     def get_user_movie(self, uid):
-        print(self.users)
         user = self.users[uid]
         if user.cur_movie >= len(self.movies):
             self.movies.extend(ml.get_pool([]))
@@ -70,15 +69,13 @@ def join_room():
 @app.route("/api/room/movie", methods=["GET"])
 def movie():
     if request.json == None or "room" not in request.json or "uid" not in request.json:
-        abort(400)
+        abort(400, "Invalid data")
     
     room = request.json["room"]
     uid = request.json["uid"]
 
     movie = rooms[room].get_user_movie(uid)
-    print(movie)
-
-    #
+    
     return json.dumps({
         "uid": str(uid),
         "image": movie.image_link,
