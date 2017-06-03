@@ -3,15 +3,28 @@
     height: 100%;
 }
 
-.game-page #cards {
+.game-page .tinder-container {
     width: 100%;
     height: 100%;
 }
 
-.game-page #cards .card {
+.game-page .tinder-container #cards {
+    width: 100%;
+    height: 100%;
+}
+
+.game-page .tinder-container #cards .card {
     border: none;
 }
 
-.game-page #cards h1 {
+.game-page .tinder-container #cards .card:not(:first-child) {
+    display: none;
+}
+
+.game-page .tinder-container #cards h1 {
     color: white;
+}
+
+.tinder-container.tinder-hidden #cards {
+    display: none;
 }
