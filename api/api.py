@@ -125,7 +125,7 @@ class Pool:
                     votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes(final=True)], key=lambda x: -x[0] )
                     print(votes)
                     votes = votes[:3]
-                    votes = [i for _,i in votes]
+                    votes = [i for rt, i in votes if rt > 0]
                     return (2, votes)
                 else:
                     return (2, None)
