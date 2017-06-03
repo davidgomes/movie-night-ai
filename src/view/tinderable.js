@@ -16,7 +16,7 @@ class Card extends React.Component {
         }
     }
 
-    setInitialPosition() {
+    setInitialPosition = () => {
         var screen = document.getElementById("root"),
             card = ReactDOM.findDOMNode(this),
 
