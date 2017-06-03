@@ -167,7 +167,7 @@ class Ml:
     if len(movie_pairs) == 0:
       res = list(np.random.choice(self.n_movies, num_sample, replace=False))
     else:
-      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 400, 1000), replace=False))
+      sample_list = list(np.random.choice(self.n_movies, min(num_sample * 200, 700), replace=False))
 
       ratings = [i[0] for i in movie_pairs]
       movies  = [i[1] for i in movie_pairs]
