@@ -25,7 +25,7 @@ class User:
         return str(self.uid) + ", " + str(self.cur_movie)
 
 class Pool:
-    ROUNDS = 10
+    ROUNDS = 15
 
     def __init__(self):
         self.movies = []
@@ -75,7 +75,7 @@ class Pool:
                     more_movies = 3
 
                 self.block = True
-                self.movies.extend(ml.get_pool(list(votes), abs((25 - len(self.movies)) / 25), more_movies))
+                self.movies.extend(ml.get_pool(list(votes), max(0, (6 - len(self.movies)) / 15), more_movies))
                 self.block = False
 
                 movie = ml.movie_list[self.movies[user.cur_movie]]
