@@ -3,6 +3,7 @@ import api from "../util/api";
 export const CREATE_ROOM = "CREATE_ROOM";
 export const JOIN_ROOM = "JOIN_ROOM";
 export const FETCH_NEXT_MOVIE = "FETCH_NEXT_MOVIE";
+export const REQUEST_NEXT_MOVIE = "REQUEST_NEXT_MOVIE";
 
 export function createRoom() {
     return dispatch => {
@@ -26,13 +27,15 @@ export function joinRoom(roomName) {
 
 export function fetchNextMovie(userId, roomName) {
     return dispatch => {
+        dispatch({ type: REQUEST_NEXT_MOVIE });
+
         api.fetchNextMovie(userId, roomName)
            .then(
                data => dispatch({ type: FETCH_NEXT_MOVIE, payload: data }),
                err => console.error(err)
            );
     };
-};
+}
 
 export function voteCurrentMovie(userId, roomName, vote) {
     return dispatch => {
