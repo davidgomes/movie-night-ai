@@ -18,11 +18,20 @@ const reducer = (state = { currentMovie: -1 }, action) => {
             uid: action.payload.uid,
         };
     } else if (action.type === FETCH_NEXT_MOVIE) {
-        state = {
-            ...state,
-            movie: action.payload,
-            currentMovie: state.currentMovie + 1,
-        };
+        console.log(action.payload);
+
+        if (action.payload.message && action.payload.message === "Try again later") {
+            state = {
+                ...state,
+                waitForOthers: true,
+            };
+        } else {
+            state = {
+                ...state,
+                movie: action.payload,
+                currentMovie: state.currentMovie + 1,
+            };
+        }
     }
 
     return state;

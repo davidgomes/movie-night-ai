@@ -8,7 +8,7 @@ import "./game-page.css";
 let cards = [];
 
 for (let i = 0; i < 55; i++) {
-    cards.push({id:i.toString()});
+    cards.push({ id:i.toString() });
 }
 
 class GamePage extends React.Component {
@@ -59,16 +59,29 @@ class GamePage extends React.Component {
             return null;
         }
 
-        return (
-            <div className="game-page">
-                Room {this.props.roomName}
-
+        let inner;
+        if (this.props.waitForOthers) {
+            inner = (
+                <div>
+                    Wait a little bit for others!
+                </div>
+            );
+        } else {
+            inner = (
                 <Tinderable
                     initialCardsData={cards}
                     onSwipeLeft={this.handleSwipeLeft}
                     onSwipeRight={this.handleSwipeRight}
                     onSwipeBottom={this.handleSwipeBottom}
                 />
+            );
+        }
+
+        return (
+            <div className="game-page">
+                Room {this.props.roomName}
+
+                {inner}
             </div>
         );
     }
@@ -79,4 +92,5 @@ export default connect(s => ({
     uid: s.uid,
     movie: s.movie,
     currentMovie: s.currentMovie,
+    waitForOthers: s.waitForOthers,
 }))(GamePage);

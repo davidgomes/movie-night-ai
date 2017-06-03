@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import addons from "react-addons";
 import Hammer from "hammerjs";
 import merge from "merge";
+import classnames from "classnames";
 
 class Card extends React.Component {
     constructor(props) {
@@ -60,12 +60,9 @@ class Card extends React.Component {
             backgroundRepeat: "no-repeat",
         }, this.props.style);
 
-        var classes = addons.classSet(merge(
-            {
-                card: true
-            },
-            this.props.classes
-        ));
+        var classes = classnames({
+            card: true,
+        }, this.props.classes);
 
         return (
             <div style={style} className={classes}>
