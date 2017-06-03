@@ -3,7 +3,7 @@ from werkzeug.exceptions import BadRequest
 import json
 import uuid
 from random import randint
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from ml.recommender import Ml
 import urllib.request
 
@@ -66,23 +66,23 @@ def join_room():
         "uid": uid
     })
 
-@app.route("/api/room/movie", methods=["GET"])
+@app.route("/api/room/movie", methods=["POST"])
 def movie():
     if request.json == None or "room" not in request.json or "uid" not in request.json:
         abort(400, "Invalid data")
-    
+
     room = request.json["room"]
     uid = request.json["uid"]
 
+    print(room)
     movie = rooms[room].get_user_movie(uid)
-    
+
     return json.dumps({
         "uid": str(uid),
-        "image": movie.image_link,
-        "title": movie.title,
-        "genres": movie.genres
+        "image": "http://image.tmdb.org/t/p/w500/pUNcNraH6lvUvy6IBvyjJdNAd6Y.jpg",
+        "title": "007",
+        "genres": ["Genre"]
     })
 
 if __name__ == "__main__":
     app.run(debug=True)
-

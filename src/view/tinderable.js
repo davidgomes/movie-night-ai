@@ -1,22 +1,23 @@
-/*global require,module,setTimeout*/
-var React = require('react'),
-    ReactDOM = require('react-dom'),
-    addons = require('react-addons'),
-    Hammer = require('hammerjs'),
-    merge = require('merge');
+import React from "react";
+import ReactDOM from "react-dom";
+import addons from "react-addons";
+import Hammer from "hammerjs";
+import merge from "merge";
 
-var Card = React.createClass({
-    getInitialState: function() {
-        return {
+class Card extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
             initialPosition: {
                 x: 0,
-                y: 0
-            }
-        };
-    },
+                y: 0,
+            },
+        }
+    }
 
-    setInitialPosition: function() {
-        var screen = document.getElementById('root'),
+    setInitialPosition() {
+        var screen = document.getElementById("root"),
             card = ReactDOM.findDOMNode(this),
 
             initialPosition = {
@@ -27,24 +28,24 @@ var Card = React.createClass({
         this.setState({
             initialPosition: initialPosition
         });
-    },
+    }
 
-    componentDidMount: function() {
+    componentDidMount() {
         this.setInitialPosition();
 
-        window.addEventListener('resize', this.setInitialPosition);
-    },
+        window.addEventListener("resize", this.setInitialPosition);
+    }
 
-    componentWillUnmount: function() {
-        window.removeEventListener('resize', this.setInitialPosition);
-    },
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.setInitialPosition);
+    }
 
-    render: function() {
-        var initialTranslate = ''.concat(
-            'translate3d(',
-            this.state.initialPosition.x + 'px,',
-            this.state.initialPosition.y + 'px,',
-            '0px)'
+    render() {
+        var initialTranslate = "".concat(
+            "translate3d(",
+            this.state.initialPosition.x + "px,",
+            this.state.initialPosition.y + "px,",
+            "0px)"
         );
 
         var style = merge({
@@ -54,9 +55,9 @@ var Card = React.createClass({
             zIndex: this.props.index,
             width: "90%",
             height: "90%",
-            backgroundImage: 'url("' + this.props.image + '")',
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
+            backgroundImage: "url(\"" + this.props.image + "\")",
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
         }, this.props.style);
 
         var classes = addons.classSet(merge(
@@ -73,27 +74,68 @@ var Card = React.createClass({
             </div>
         );
     }
-});
+}
 
-var DraggableCard = React.createClass({
-    getInitialState: function() {
-        return {
-            x: 0,
-            y: 0,
-            initialPosition: {
-                x: 0,
-                y: 0
-            },
-            startPosition: {
-                x: 0,
-                y: 0
-            },
-            animation: null
-        };
+const draggableCardInitialState = {
+    x: 0,
+    y: 0,
+    initialPosition: {
+        x: 0,
+        y: 0
     },
+    startPosition: {
+        x: 0,
+        y: 0
+    },
+    animation: null,
+};
 
-    resetPosition: function() {
-        var screen = document.getElementById('root'),
+class DraggableCard extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = draggableCardInitialState;
+
+        this.panHandlers = {
+            panstart: function() {
+                this.setState({
+                    animation: false,
+                    startPosition: {
+                        x: this.state.x,
+                        y: this.state.y
+                    }
+                });
+            },
+            panend: function(ev) {
+                var screen = document.getElementById("root"),
+                    card = ReactDOM.findDOMNode(this);
+
+                if (this.state.y > 350) {
+                    this.props.onOutScreenBottom(this.props.cardId);
+                } else if (this.state.x < -50) {
+                    this.props.onOutScreenLeft(this.props.cardId);
+                } else if ((this.state.x + (card.offsetWidth - 50)) > screen.offsetWidth) {
+                    this.props.onOutScreenRight(this.props.cardId);
+                } else {
+                    this.resetPosition();
+                    this.setState({
+                        animation: true
+                    });
+                }
+            },
+            panmove: function(ev) {
+                this.setState(this.calculatePosition(
+                    ev.deltaX, ev.deltaY
+                ));
+            },
+            pancancel: function(ev) {
+                console.log(ev.type);
+            },
+        };
+    }
+
+    resetPosition = () => {
+        var screen = document.getElementById("root"),
             card = ReactDOM.findDOMNode(this);
 
         var initialPosition = {
@@ -101,7 +143,7 @@ var DraggableCard = React.createClass({
             y: Math.round((screen.offsetHeight - card.offsetHeight) / 2)
         };
 
-        var initialState = this.getInitialState();
+        var initialState = draggableCardInitialState;
         this.setState(
             {
                 x: initialPosition.x,
@@ -110,69 +152,32 @@ var DraggableCard = React.createClass({
                 startPosition: initialState.startPosition
             }
         );
-    },
+    }
 
-    panHandlers: {
-        panstart: function() {
-            this.setState({
-                animation: false,
-                startPosition: {
-                    x: this.state.x,
-                    y: this.state.y
-                }
-            });
-        },
-        panend: function(ev) {
-            var screen = document.getElementById('root'),
-                card = ReactDOM.findDOMNode(this);
-
-            if (this.state.y > 350) {
-                this.props.onOutScreenBottom(this.props.cardId);
-            } else if (this.state.x < -50) {
-                this.props.onOutScreenLeft(this.props.cardId);
-            } else if ((this.state.x + (card.offsetWidth - 50)) > screen.offsetWidth) {
-                this.props.onOutScreenRight(this.props.cardId);
-            } else {
-                this.resetPosition();
-                this.setState({
-                    animation: true
-                });
-            }
-        },
-        panmove: function(ev) {
-            this.setState(this.calculatePosition(
-                ev.deltaX, ev.deltaY
-            ));
-        },
-        pancancel: function(ev) {
-            console.log(ev.type);
-        }
-    },
-
-    handlePan: function(ev) {
+    handlePan = (ev) => {
         ev.preventDefault();
         this.panHandlers[ev.type].call(this, ev);
         return false;
-    },
+    }
 
-    handleSwipe: function(ev) {
+    handleSwipe = (ev) => {
         console.log(ev.type);
-    },
+    }
 
-    calculatePosition: function(deltaX, deltaY) {
+    calculatePosition(deltaX, deltaY) {
         return {
             x: (this.state.initialPosition.x + deltaX),
             y: (this.state.initialPosition.y + deltaY)
         };
-    },
+    }
 
-    componentDidMount: function() {
+    componentDidMount() {
         this.hammer = new Hammer.Manager(ReactDOM.findDOMNode(this));
         this.hammer.add(new Hammer.Pan({threshold: 0}));
 
         var events = [
-            ['panstart panend pancancel panmove', this.handlePan],
-            ['swipestart swipeend swipecancel swipemove',
+            ["panstart panend pancancel panmove", this.handlePan],
+            ["swipestart swipeend swipecancel swipemove",
              this.handleSwipe]
         ];
 
@@ -183,23 +188,23 @@ var DraggableCard = React.createClass({
         }, this);
 
         this.resetPosition();
-        window.addEventListener('resize', this.resetPosition);
-    },
+        window.addEventListener("resize", this.resetPosition);
+    }
 
-    componentWillUnmount: function() {
+    componentWillUnmount() {
 	this.hammer.stop();
 	this.hammer.destroy();
 	this.hammer = null;
 
-        window.removeEventListener('resize', this.resetPosition);
-    },
+        window.removeEventListener("resize", this.resetPosition);
+    }
 
-    render: function() {
-        var translate = ''.concat(
-            'translate3d(',
-            this.state.x + 'px,',
-            this.state.y + 'px,',
-            '0px)'
+    render() {
+        var translate = "".concat(
+            "translate3d(",
+            this.state.x + "px,",
+            this.state.y + "px,",
+            "0px)"
         );
 
         var style = {
@@ -213,28 +218,27 @@ var DraggableCard = React.createClass({
         };
 
         return (<Card {...this.props}
-                      ref={(el) => { this.$el = el; }}
                       style={style}
                       classes={classes}></Card>);
     }
-});
+}
 
-var Tinderable = React.createClass({
-    getInitialState: function() {
-        return {
+class Tinderable extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
             cards: this.props.initialCardsData,
-            alertLeft: false,
-            alertRight: false
         };
-    },
+    }
 
-    removeCard: function(side, cardId) {
+    removeCard(side, cardId) {
         setTimeout(function(){
-            if (side === 'left') {
+            if (side === "left") {
                 this.props.onSwipeLeft();
-            } else if (side === 'right') {
+            } else if (side === "right") {
                 this.props.onSwipeRight();
-            } else if (side === 'bottom') {
+            } else if (side === "bottom") {
                 this.props.onSwipeBottom();
             }
         }.bind(this), 0);
@@ -243,42 +247,30 @@ var Tinderable = React.createClass({
             cards: this.state.cards.filter(function(c) {
                 return c.id !== cardId;
             }),
-            alertLeft: side === 'left',
-            alertRight: side === 'right'
         });
-    },
+    }
 
-    render: function() {
+    render() {
+        console.log(cards);
         var cards = this.state.cards.map(function(c, index, coll) {
             var props = {
                 cardId: c.id,
                 index: index,
-                onOutScreenLeft: this.removeCard.bind(this, 'left'),
-                onOutScreenRight: this.removeCard.bind(this, 'right'),
-                onOutScreenBottom: this.removeCard.bind(this, 'bottom'),
+                onOutScreenLeft: this.removeCard.bind(this, "left"),
+                onOutScreenRight: this.removeCard.bind(this, "right"),
+                onOutScreenBottom: this.removeCard.bind(this, "bottom"),
                 title: c.title,
                 text: c.text,
                 image: c.image,
                 key: c.id,
             };
 
-            var component = (index === (coll.length - 1)) ?
+            var component = (index === 0) ?
                             DraggableCard:
                             Card;
 
             return React.createElement(component, props);
         }, this);
-
-        var classesAlertLeft = addons.classSet({
-            'alert-visible': this.state.alertLeft,
-            'alert-left': true,
-            'alert': true
-        });
-        var classesAlertRight = addons.classSet({
-            'alert-visible': this.state.alertRight,
-            'alert-right': true,
-            'alert': true
-        });
 
         return (
             <div id="cards">
@@ -286,6 +278,6 @@ var Tinderable = React.createClass({
             </div>
         );
     }
-});
+}
 
-module.exports = Tinderable;
+export default Tinderable;
