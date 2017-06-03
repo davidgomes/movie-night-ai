@@ -2,6 +2,7 @@ from flask import request, Flask, abort
 from werkzeug.exceptions import BadRequest
 import json
 import uuid
+import namelist
 from random import randint
 from flask_cors import CORS, cross_origin
 from ml.recommender import Ml
@@ -83,7 +84,7 @@ class Pool:
 
 @app.route("/api/room", methods=["POST"])
 def create_room():
-    room_num = ("%d" % randint(0, 100)).zfill(2)
+    room_num = ("%s%s" % (namelist.names[randint(0, len(namelist.names) - 1)], str(randint(0, 100)).zfill(2)))
     uid = str(uuid.uuid4())
 
     rooms[room_num] = Pool()
