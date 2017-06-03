@@ -19,17 +19,17 @@ const reducer = (state = { currentMovie: -1 }, action) => {
         };
     } else if (action.type === FETCH_NEXT_MOVIE) {
         if (action.payload.message) {
-            if (action.payload.message === "Try again later") {
-                state = {
-                    ...state,
-                    waitForOthers: true,
-                };
-            } else if (action.payload.message === "Game ended") {
+            if (action.payload.message === "Game ended") {
                 state = {
                     ...state,
                     gameEnded: true,
                     podium: action.payload.podium,
                     waitForOthers: false,
+                };
+            } else if (action.payload.message === "Try again later") {
+                state = {
+                    ...state,
+                    waitForOthers: true,
                 };
             }
         } else {
