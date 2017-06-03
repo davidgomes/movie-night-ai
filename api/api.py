@@ -70,19 +70,27 @@ def join_room():
 def movie():
     if request.json == None or "room" not in request.json or "uid" not in request.json:
         abort(400, "Invalid data")
-
+    
     room = request.json["room"]
     uid = request.json["uid"]
 
-    print(room)
-    movie = rooms[room].get_user_movie(uid)
+    movie = None
+    if room in rooms:
+        movie = rooms[room].get_user_movie(uid)
+    else:
+        print("Room not found")
 
-    return json.dumps({
-        "uid": str(uid),
-        "image": "http://image.tmdb.org/t/p/w500/pUNcNraH6lvUvy6IBvyjJdNAd6Y.jpg",
-        "title": "007",
-        "genres": ["Genre"]
-    })
+    if movie == None:
+        return json.dumps({
+            "message": "Try again later",
+        })
+    else:
+        return json.dumps({
+            "uid": str(uid),
+            "image": movie.image_link,
+            "title": movie.title,
+            "genres": movie.genres
+        })
 
 if __name__ == "__main__":
     app.run(debug=True)
