@@ -65,9 +65,7 @@ class Card extends React.Component {
         }, this.props.classes);
 
         return (
-            <div style={style} className={classes}>
-                <h1>{this.props.title}</h1>
-            </div>
+            <div style={style} className={classes}/>
         );
     }
 }
@@ -93,7 +91,7 @@ class DraggableCard extends React.Component {
         this.state = draggableCardInitialState;
 
         this.panHandlers = {
-            panstart: function() {
+            panstart: function () {
                 this.setState({
                     animation: false,
                     startPosition: {
@@ -102,7 +100,7 @@ class DraggableCard extends React.Component {
                     }
                 });
             },
-            panend: function(ev) {
+            panend: function (ev) {
                 var screen = document.getElementById("root"),
                     card = ReactDOM.findDOMNode(this);
 
@@ -119,12 +117,12 @@ class DraggableCard extends React.Component {
                     });
                 }
             },
-            panmove: function(ev) {
+            panmove: function (ev) {
                 this.setState(this.calculatePosition(
                     ev.deltaX, ev.deltaY
                 ));
             },
-            pancancel: function(ev) {
+            pancancel: function (ev) {
                 console.log(ev.type);
             },
         };
@@ -174,10 +172,10 @@ class DraggableCard extends React.Component {
         var events = [
             ["panstart panend pancancel panmove", this.handlePan],
             ["swipestart swipeend swipecancel swipemove",
-             this.handleSwipe]
+                this.handleSwipe]
         ];
 
-        events.forEach(function(data) {
+        events.forEach(function (data) {
             if (data[0] && data[1]) {
                 this.hammer.on(data[0], data[1]);
             }
@@ -188,9 +186,9 @@ class DraggableCard extends React.Component {
     }
 
     componentWillUnmount() {
-	this.hammer.stop();
-	this.hammer.destroy();
-	this.hammer = null;
+        this.hammer.stop();
+        this.hammer.destroy();
+        this.hammer = null;
 
         window.removeEventListener("resize", this.resetPosition);
     }
@@ -229,7 +227,7 @@ class Tinderable extends React.Component {
     }
 
     removeCard(side, cardId) {
-        setTimeout(function(){
+        setTimeout(function () {
             if (side === "left") {
                 this.props.onSwipeLeft();
             } else if (side === "right") {
@@ -240,14 +238,14 @@ class Tinderable extends React.Component {
         }.bind(this), 0);
 
         this.setState({
-            cards: this.state.cards.filter(function(c) {
+            cards: this.state.cards.filter(function (c) {
                 return c.id !== cardId;
             }),
         });
     }
 
     render() {
-        var cards = this.state.cards.map(function(c, index, coll) {
+        var cards = this.state.cards.map(function (c, index, coll) {
             var props = {
                 cardId: c.id,
                 index: index,
@@ -261,8 +259,8 @@ class Tinderable extends React.Component {
             };
 
             var component = (index === 0) ?
-                            DraggableCard:
-                            Card;
+                DraggableCard :
+                Card;
 
             return React.createElement(component, props);
         }, this);
