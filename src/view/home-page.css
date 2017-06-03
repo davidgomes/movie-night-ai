@@ -6,6 +6,20 @@
     justify-content: center;
 }
 
+.home-page h1 {
+    text-align: center;
+    font-weight: bold;
+}
+
+.home-page h5 {
+    text-align: center;
+    margin-bottom: 100px;
+    color: #655f5f;
+    padding-top: 20px;
+    padding-right: 40px;
+    padding-left: 40px;
+}
+
 .home-page ul {
     list-style-type: none;
     padding: 0;
