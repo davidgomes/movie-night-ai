@@ -24,7 +24,7 @@ class HomePage extends React.Component {
     };
 
     handleClickJoin = () => {
-        this.props.dispatch(joinRoom(this.state.roomName));
+        this.props.dispatch(joinRoom(this.state.roomName.toLowerCase()));
     };
 
     handleChangeRoomName = (event) => {
