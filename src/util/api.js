@@ -13,6 +13,19 @@ export default {
         );
     },
 
+    numberOfPlayersInRoom: (roomName) => {
+        return xr({
+            method: "POST",
+            url: `${API_HOST}/api/room/players`,
+            data: {
+                room: roomName,
+            }
+        }).then(
+            res => res.data,
+            err => err
+        );
+    },
+
     joinRoom: (roomName) => {
         return xr({
             method: "POST",

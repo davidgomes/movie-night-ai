@@ -3,6 +3,7 @@ import {
     JOIN_ROOM,
     FETCH_NEXT_MOVIE,
     REQUEST_NEXT_MOVIE,
+    NUMBER_OF_PLAYERS_IN_ROOM,
 } from "../actions";
 
 const reducer = (state = { currentMovie: -1 }, action) => {
@@ -11,6 +12,11 @@ const reducer = (state = { currentMovie: -1 }, action) => {
             ...state,
             name: action.payload.name,
             uid: action.payload.uid,
+        };
+    } else if (action.type === NUMBER_OF_PLAYERS_IN_ROOM) {
+        state = {
+            ...state,
+            numberOfUsers: action.payload.players,
         };
     } else if (action.type === JOIN_ROOM) {
         state = {
