@@ -8,11 +8,19 @@ import "./home-page.css";
 class HomePage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { roomName: "" };
+        this.state = { roomName: "", writingRoomName: false };
     }
 
     handleClickCreate = () => {
         this.props.dispatch(createRoom());
+    };
+
+    handleClickStartJoin = (evt) => {
+        evt.preventDefault();
+
+        this.setState({
+            writingRoomName: true,
+        });
     };
 
     handleClickJoin = () => {
@@ -24,31 +32,59 @@ class HomePage extends React.Component {
     };
 
     render() {
-        return (
-            <div className="home-page">
-                <ul>
+        let inner;
+
+        if (!this.state.writingRoomName) {
+            inner = (
+                <div>
                     <li>
                         <Link
                             onClick={this.handleClickCreate}
                             to="/game"
                         >
-                            Create
+                            Create Room
                         </Link>
                     </li>
-                    <li>
-                        <input
-                            type="text"
-                            onChange={this.handleChangeRoomName}
-                        />
 
+                    <li>
                         <Link
-                            onClick={this.handleClickJoin}
-                            to="/game"
+                            onClick={this.handleClickStartJoin}
+                            to="#"
                         >
-                            Join
+                            Join Room
                         </Link>
                     </li>
-                </ul>
+                </div>
+            );
+        } else {
+            inner = (
+                <li>
+                    <input
+                        type="text"
+                        onChange={this.handleChangeRoomName}
+                        placeholder="Enter room name here..."
+                    />
+
+                    <Link
+                        onClick={this.handleClickJoin}
+                        to="/game"
+                    >
+                        Join Room
+                    </Link>
+                </li>
+            );
+        }
+
+        return (
+            <div className="home-page">
+                <div>
+                    <h1>Movie Night AI</h1>
+                    <h5>The mastermind that decides what movie your group will watch tonight.</h5>
+
+                    <ul>
+                        {inner}
+                    </ul>
+                </div>
             </div>
         );
     }
