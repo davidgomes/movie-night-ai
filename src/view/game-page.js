@@ -5,7 +5,11 @@ import { voteCurrentMovie, fetchNextMovie } from "../actions";
 
 import "./game-page.css";
 
-const cards = [{id:"1"}, {id:"2"}, {id:"3"}];
+let cards = [];
+
+for (let i = 0; i < 55; i++) {
+    cards.push({id:i.toString()});
+}
 
 class GamePage extends React.Component {
     constructor(props) {
