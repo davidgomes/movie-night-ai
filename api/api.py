@@ -42,6 +42,9 @@ def create_room():
 
     rooms[room_num] = Pool()
     rooms[room_num].add_user(uid)
+
+    print('curl http://127.0.0.1:5000/api/room/movie -X GET --data \'{"room": "%s", "uid": "%s"}\' -H "Content-Type: application/json"' % (room_num, uid) )
+
     return json.dumps({
         "name": room_num,
         "uid": uid
