@@ -37,12 +37,10 @@ class Pool:
 
     def check_next(self, cur_movie):
         if cur_movie >= self.ROUNDS:
-            print('Finish game')
             return 2
  
         cur = min([u.cur_movie for u in self.users.values()])
         if cur_movie - cur <= 4:
-            print("Can move to next")
             return 1
         return 0
 
@@ -84,9 +82,16 @@ class Pool:
 
                 return (0, movie)
             elif check == 2:
-                votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes()], key=lambda x: -x[0] )[:3]
-                votes = [i for _,i in votes]
-                return (2, votes)
+                ending = True
+                for u in self.users.values():
+                    if u.cur_movie != user.cur_movie:
+                        ending = False
+                if ending:
+                    votes = sorted([(j, ml.movie_list[i] ) for i,j in self.sum_votes()], key=lambda x: -x[0] )[:3]
+                    votes = [i for _,i in votes]
+                    return (2, votes)
+                else:
+                    return (2, None)
             else:
                 return (1, None)
         else:
@@ -158,24 +163,29 @@ def movie():
 
     if res == 1:
         return json.dumps({
+            "status": "retry",
             "message": "Try again later",
         })
     elif res == 2:
         podium = []
-        print(movie)
-        for m in movie:
-            podium.append(
-               {"uid": str(uid),
-                "image": m.image_link,
-                "title": m.title,
-                "genres": m.genres}
-            )
+        if len(podium) == 0:
+            return json.dumps({
+                "status": "retry",
+                "message": "Try again later",
+            })
+        else:
+            for m in movie:
+                podium.append(
+                   {"uid": str(uid),
+                    "image": m.image_link,
+                    "title": m.title,
+                    "genres": m.genres}
+                )
         return json.dumps({
             "message": "Game ended",
             "podium": podium
         })
     else:
-        print("TT: ", movie)
         return json.dumps({
             "uid": str(uid),
             "image": movie.image_link,
