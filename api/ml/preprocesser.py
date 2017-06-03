@@ -4,7 +4,7 @@ if __name__ == "__main__":
   data_folder = 'data'
   rating_list = []
   movie_list = []
-  rat_cap = 500000
+  rat_cap = 1000000
 
   with open(data_folder + '/movies.csv', 'r') as csvfile:
     movie_reader = csv.reader(csvfile, delimiter=',')
@@ -21,7 +21,8 @@ if __name__ == "__main__":
       user_id, movie_id, r_type, _ = rating
 
       if movie_id in movie_list:
-        rating_list.append((user_id, movie_id, -1 if float(r_type) < 3 else 1))
+        if float(r_type) >= 4:
+          rating_list.append((user_id, movie_id, -1 if float(r_type) <= 2 else 1))
 
       itera += 1
       if int(itera) % 100000 == 0:
