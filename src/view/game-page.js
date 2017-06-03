@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { connect } from "react-redux";
 import Tinderable from "./tinderable";
 import { voteCurrentMovie, fetchNextMovie } from "../actions";
@@ -7,7 +8,7 @@ import "./game-page.css";
 
 let cards = [];
 
-for (let i = 0; i < 55; i++) {
+for (let i = 0; i < 100; i++) {
     cards.push({ id:i.toString() });
 }
 
@@ -65,6 +66,12 @@ class GamePage extends React.Component {
                     Wait a little bit for others!
                 </div>
             );
+        } else if (this.props.gameEnded) {
+            inner = _.map(this.props.podium, (movie) => (
+                <div>
+                    {movie.title}
+                </div>
+            ));
         } else {
             inner = (
                 <Tinderable
@@ -92,4 +99,6 @@ export default connect(s => ({
     movie: s.movie,
     currentMovie: s.currentMovie,
     waitForOthers: s.waitForOthers,
+    gameEnded: s.gameEnded,
+    podium: s.podium,
 }))(GamePage);
