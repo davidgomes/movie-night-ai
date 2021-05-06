@@ -5,5 +5,5 @@ Jinja2==2.9.6
 MarkupSafe==1.0
 Werkzeug==0.12.2
 numpy==1.12
-Flask-Cors==2.1.2
+Flask-Cors==3.0.9
 urllib3==1.21.1
